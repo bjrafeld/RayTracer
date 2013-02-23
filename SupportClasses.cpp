@@ -12,7 +12,7 @@ Vector::Vector(float x, float y, float z) {
 	this->z = z;
 }
 
-const Vector Vector::Vector operator+(const Vector& v) {
+const Vector Vector::Vector operator+(const Vector &v) {
 	Vector result;
 	result.x = this->x + v.x;
 	result.y = this->y + v.y;
@@ -20,7 +20,7 @@ const Vector Vector::Vector operator+(const Vector& v) {
 	return result;
 }
 
-const Vector Vector::Vector operator-(const Vecto& v) {
+const Vector Vector::Vector operator-(const Vector &v) {
 	Vector result;
 	result.x = this->x - v.x;
 	result.y = this->y - v.y;
@@ -28,7 +28,7 @@ const Vector Vector::Vector operator-(const Vecto& v) {
 	return result;
 }
 
-const Vector Vector::Vector operator*(const float& scalar) {
+const Vector Vector::Vector operator*(const float &scalar) {
 	Vector result;
 	result.x = this.x*scalar;
 	result.y = this.y*scalar;
@@ -36,7 +36,7 @@ const Vector Vector::Vector operator*(const float& scalar) {
 	return result;
 }
 
-const Vector Vector::Vector operator/(const float& scalar) {
+const Vector Vector::Vector operator/(const float &scalar) {
 	Vector result;
 	result.x = this.x/scalar;
 	result.y = this.y/scalar;
@@ -65,7 +65,7 @@ Point::Point(float x, float y, float z) {
 	this->z = z;
 }
 
-const Point Point::Point operator+(const Point& p) {
+const Point Point::Point operator+(const Point &p) {
 	Point result;
 	result.x = this->x + p.x;
 	result.y = this->y + p.y;
@@ -73,7 +73,7 @@ const Point Point::Point operator+(const Point& p) {
 	return result;
 }
 
-const Point Point::Point operator-(const Point& p) {
+const Point Point::Point operator-(const Point &p) {
 	Point result;
 	result.x = this->x - p.x;
 	result.y = this->y - p.y;
