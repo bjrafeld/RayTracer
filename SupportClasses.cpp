@@ -4,57 +4,61 @@
 
 inline float sqr(float x) {return x*x;}
 
-Vector::Vector() {
+Vector3::Vector3() {
 	this->x = 0.0;
 	this->y = 0.0;
 	this->x = 0.0;
 }
 
-Vector::Vector(float x, float y, float z) {
+Vector3::Vector3(float x, float y, float z) {
 	this->x = x;
 	this->y = y;
 	this->z = z;
 }
 
-Vector Vector::operator+(Vector v) {
-	Vector result;
+Vector3 Vector3::operator+(Vector3 v) {
+	Vector3 result;
 	result.x = x + v.x;
 	result.y = y + v.y;
 	result.z = z + v.z;
 	return result;
 }
 
-Vector Vector::operator-(Vector v) {
-	Vector result;
+Vector3 Vector3::operator-(Vector3 v) {
+	Vector3 result;
 	result.x = x - v.x;
 	result.y = y - v.y;
 	result.z = z - v.z;
 	return result;
 }
 
-Vector Vector::operator*(float scalar) {
-	Vector result;
+Vector3 Vector3::operator*(float scalar) {
+	Vector3 result;
 	result.x = x*scalar;
 	result.y = y*scalar;
 	result.z = z*scalar;
 	return result;
 }
 
-Vector Vector::operator/(float scalar) {
-	Vector result;
+Vector3 Vector3::operator/(float scalar) {
+	Vector3 result;
 	result.x = x/scalar;
 	result.y = y/scalar;
 	result.z = z/scalar;
 	return result;
 }
 
-Vector Vector::normalize() {
-	Vector result;
+Vector3 Vector3::normalize() {
+	Vector3 result;
 	float magnitude = sqrt(sqr(this->x)+sqr(this->y)+sqr(this->z));
 	result.x = x/magnitude;
 	result.y = y/magnitude;
 	result.z = z/magnitude;
 	return result;
+}
+
+float Vector3::dotProduct(const Vector3 v1, const Vector3 v2) {
+	return ((v1.x*v2.x) + (v1.y*v2.y) + (v1.z*v2.z));
 }
 
 Point::Point() {
@@ -85,10 +89,10 @@ Point Point::operator-(Point p) {
 	return result;
 }
 
-Vector Vector::pointSubtraction(Point target_point, Point initial_point) {
+Vector3 Vector3::pointSubtraction(Point target_point, Point initial_point) {
 	Point temp;
 	temp = target_point-initial_point;
-	Vector result(temp.x, temp.y, temp.z);
+	Vector3 result(temp.x, temp.y, temp.z);
 	return result;
 }
 
@@ -147,12 +151,12 @@ Normal Normal::operator-(Normal n) {
 
 Ray::Ray() {
 	pos = Point();
-	dir = Vector();
+	dir = Vector3();
 	t_min = 0.0;
 	t_max = 0.0;
 }
 
-Ray::Ray(Point p, Vector v, float t_min, float t_max) {
+Ray::Ray(Point p, Vector3 v, float t_min, float t_max) {
 	this->pos = p;
 	this->dir = v;
 	this->t_min = t_min;
@@ -219,4 +223,31 @@ BRDF::BRDF(Color ka, Color kd, Color ks, Color kr) {
 	this->kd = kd;
 	this->ks = ks;
 	this->kr = kr;
+}
+
+Matrix::Matrix(vector <vector <float> > input) {
+	mat = input;
+}
+
+Matrix::Matrix() {
+	vector< vector<float> >(4, vector <float>(4, 0.0));
+}
+
+Matrix Matrix::createTranslationMatrix(float tx, float ty, float tz) {
+	vector <vector <float> > input(4, vector<float>(4, 0.0));
+	vector<float> last(4, 1.0);
+	last[0] = tx;
+	last[1] = ty;
+	last[2] = tz;
+	input[3] = last;
+	return Matrix(input);
+}
+
+Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
+	vector <vector <float> > input(4, vector<float>(4, 0.0));
+	input[0][0] = sx;
+	input[1][1] = sy;
+	input[2][2] = sz;
+	input[3][3] = 1.0;
+	return Matrix(input);
 }

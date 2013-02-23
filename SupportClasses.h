@@ -1,7 +1,8 @@
-//Vector Class
+#include <vector>
 
+using namespace std;
 
-class Vector;
+class Vector3;
 class Point;
 class Normal;
 class Ray;
@@ -9,18 +10,20 @@ class Color;
 class Sample;
 class LocalGeo;
 class BRDF;
+class Matrix;
 
-class Vector {
+class Vector3 {
 public:
 	float x, y, z;
-	Vector();
-    Vector(float x, float y, float z);
-    Vector operator+(Vector v);
-    Vector operator-(Vector v);
-    Vector operator*(float scalar);
-    Vector operator/(float scalar);
-    Vector normalize();
-    static Vector pointSubtraction(Point target_point, Point initial_point);
+	Vector3();
+    Vector3(float x, float y, float z);
+    Vector3 operator+(Vector3 v);
+    Vector3 operator-(Vector3 v);
+    Vector3 operator*(float scalar);
+    Vector3 operator/(float scalar);
+    Vector3 normalize();
+    static Vector3 pointSubtraction(Point target_point, Point initial_point);
+    static float dotProduct(const Vector3 v1, const Vector3 v2);
 };
 
 
@@ -48,10 +51,10 @@ private:
 class Ray {
 public:
 	Point pos;
-	Vector dir;
+	Vector3 dir;
 	float t_min, t_max;
 	Ray();
-	Ray(Point p, Vector v, float t_min, float t_max);
+	Ray(Point p, Vector3 v, float t_min, float t_max);
 };
 
 class Color {
@@ -83,4 +86,13 @@ public:
 	Color ka, kd, ks, kr;
 	BRDF();
 	BRDF(Color ka, Color kd, Color ks, Color kr);
+};
+
+class Matrix {
+public:
+	vector< vector <float> > mat;
+	Matrix();
+	Matrix(vector< vector<float> > input);
+	static Matrix createTranslationMatrix(float tx, float ty, float tz);
+	static Matrix createScalarMatrix(float sx, float sy, float sz);
 };
