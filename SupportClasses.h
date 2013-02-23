@@ -1,28 +1,29 @@
-//Vector Class
+using namespace std;//Vector Class
+
+
 class Vector;
+class Point;
 
 class Vector {
-    float x, y, z;
-    
 public:
+	float x, y, z;
 	Vector();
     Vector(float x, float y, float z);
-    const Vector operator+(const Vector &v);
-    const Vector operator-(const Vector &v);
-    const Vector operator*(const float &scalar);
-    const Vector operator/(const float &scalar)
-    Vector noramlize();
+    Vector operator+(Vector v);
+    Vector operator-(Vector v);
+    Vector operator*(float scalar);
+    Vector operator/(float scalar);
+    Vector normalize();
+    static Vector pointSubtraction(Point target_point, Point initial_point);
 };
 
-class Point;
 
 //Point Class
 class Point {
-	float x, y, z;
-
 public:
+	float x, y, z;
 	Point();
 	Point(float x, float y, float z);
-	const Point operator+(Point &p);
-	const Point operator-(Point &p);
-}
+	Point operator+(Point p);
+	Point operator-(Point p);
+};
