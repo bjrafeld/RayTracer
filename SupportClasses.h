@@ -7,10 +7,10 @@ class Vector {
 public:
 	Vector();
     Vector(float x, float y, float z);
-    Vector operator+(Vector v);
-    Vector operator-(Vector v);
-    Vector operator*(float scalar);
-    Vector operator/(float scalar)
+    const Vector operator+(const Vector v);
+    const Vector operator-(const Vector v);
+    const Vector operator*(const float scalar);
+    const Vector operator/(const float scalar)
     Vector noramlize();
 };
 
@@ -23,6 +23,6 @@ class Point {
 public:
 	Point();
 	Point(float x, float y, float z);
-	Point operator+(Point p);
-	Point operator-(Point p);
+	const Point operator+(Point p);
+	const Point operator-(Point p);
 }
