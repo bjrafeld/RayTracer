@@ -80,3 +80,31 @@ const Point Point::Point operator-(const Point& p) {
 	result.z = this->z - p.z;
 	return result;
 }
+
+Shape::Shape() {
+}
+
+bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local) {
+	// Override me!
+}
+
+bool Shape::intersect(Ray & ray) {
+	// Override me!
+	return false;
+}
+
+Sphere::Sphere() {
+}
+
+Sphere::Sphere(Point c, float r) {
+	this->center = c;
+	this->radius = r;
+}
+
+bool intersect(Ray & ray, float* thit, LocalGeo* local) {
+
+}
+
+bool intersect(Ray & ray) {
+	float A = (ray.)
+}

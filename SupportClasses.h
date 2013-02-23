@@ -26,3 +26,48 @@ public:
 	const Point operator+(Point p);
 	const Point operator-(Point p);
 }
+
+
+// Shape Class
+class Shape;
+
+class Shape {
+
+public:
+    Shape();
+    // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
+    // tests if a ray intersects this shape, returns true if so
+    virtual bool intersect(Ray & ray);
+}
+
+// Sphere Class
+class Sphere;
+
+class Sphere : Shape{
+
+public:
+    Point center;
+    float radius;
+
+    Sphere();
+    Sphere(Point c, float r);
+    // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
+    // tests if a ray intersects this shape, returns true if so
+    virtual bool intersect(Ray & ray);
+}
+
+// Triangle Class
+
+class Triangle;
+
+class Triangle : Shape{
+
+public:
+    float x,y,z;
+    // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
+    // tests if a ray intersects this shape, returns true if so
+    virtual bool intersect(Ray & ray);
+}
