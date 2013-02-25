@@ -258,7 +258,36 @@ Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
 }
 
 float Matrix::fourDeterminant(vector < vector <float> > input) {
-
+	float a, b, c, d;
+	float colAarr[] = {input[0][1], input[0][2], input[0][3]};
+	float colBarr[] = {input[1][1], input[1][2], input[1][3]};
+	float colCarr[] = {input[2][1], input[2][2], input[2][3]};
+	float colDarr[] = {input[3][1], input[3][2], input[3][3]};
+	vector<float> colA(colAarr, colAarr + sizeof(colAarr) / sizeof(float) );
+	vector<float> colB(colBarr, colBarr + sizeof(colBarr) / sizeof(float) );
+	vector<float> colC(colCarr, colCarr + sizeof(colCarr) / sizeof(float) );
+	vector<float> colD(colDarr, colDarr + sizeof(colDarr) / sizeof(float) );
+	vector< vector <float> > matAvect(3, vector<float>(3, 0.0));
+	vector< vector <float> > matBvect(3, vector<float>(3, 0.0));
+	vector< vector <float> > matCvect(3, vector<float>(3, 0.0));
+	vector< vector <float> > matDvect(3, vector<float>(3, 0.0));
+	matAvect[0]=colB;
+	matAvect[1]=colC;
+	matAvect[2]=colD;
+	matBvect[0]=colA;
+	matBvect[1]=colC;
+	matBvect[2]=colD;
+	matCvect[0]=colA;
+	matCvect[1]=colB;
+	matCvect[2]=colD;
+	matDvect[0]=colA;
+	matDvect[1]=colB;
+	matDvect[2]=colC;
+	a = input[0][0] * Matrix::threeDeterminant(matAvect);
+	b = input[1][0] * Matrix::threeDeterminant(matBvect);
+	c = input[2][0] * Matrix::threeDeterminant(matCvect);
+	d = input[3][0] * Matrix::threeDeterminant(matDvect);
+	return (a-b+c-d);
 }
 
 float Matrix::threeDeterminant(vector< vector <float> > input) {
