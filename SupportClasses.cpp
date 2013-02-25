@@ -238,6 +238,14 @@ Matrix::Matrix() {
 	this->mat = vector< vector<float> >(4, vector <float>(4, 0.0));
 }
 
+Matrix Matrix::operator*(float n) {
+	for (int i=0; i<4; i++) {
+		for (int j=0; j<4; j++) {
+			mat[i][j] = n*mat[i][j];
+		}
+	}
+}
+
 Matrix Matrix::createTranslationMatrix(float tx, float ty, float tz) {
 	vector <vector <float> > input(4, vector<float>(4, 0.0));
 	vector<float> last(4, 1.0);
@@ -255,6 +263,47 @@ Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
 	input[2][2] = sz;
 	input[3][3] = 1.0;
 	return Matrix(input);
+}
+
+Matrix Matrix::adjunctMatrix(vector <vector <float> > input) {
+	vector< vector <float> > adjMat = Matrix::transposeMatrix(input).mat;
+	vector< vector <float> > result(4, vector<float>(4, 0.0));
+	for (int i=0; i<4; i++) {
+		for (int j=0; i<4; j++) {
+			result[i][j]=Matrix::cofactorTerm(adjMat, i, j);
+		}
+	}
+	return Matrix(result);
+}
+
+float Matrix::cofactorTerm(vector <vector <float> > input, int i, int j) {
+	for(int a=0; a<4; a++) {
+		int col=0;
+		for (int b=0; b<4; b++) {
+			if (a==i || b==j) {
+				continue;
+			} else {
+				//NOT SURE YET
+			}
+		}
+
+	}
+}
+
+Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
+	vector < vector <float> > newMat(4, vector<float>(4, 0.0));
+	for(int i=0; i<4; i++) {
+		for(int j=0; j<4; j++) {
+			newMat[i][j]=input[j][i];
+		}
+	}
+	return Matrix(newMat);
+}
+
+Matrix Matrix::computeInverseMatrix(vector < vector <float> > input) {
+	//TODO: Check for zero determinant
+	float determinant = Matrix::fourDeterminant(input);
+	return (Matrix::adjunctMatrix(input) * (1/determinant));
 }
 
 float Matrix::fourDeterminant(vector < vector <float> > input) {
@@ -326,7 +375,30 @@ Transformation::Transformation() {
 
 Transformation::Transformation(vector< vector <float> > input) {
 	this->mat = input;
-	//this->minvt = Matrix::inverse(input);
+	this->minvt = Matrix::computeInverseMatrix(input).mat;
+}
+
+Transformation::Transformation(Matrix m) {
+	this->mat=m.mat;
+	this->minvt = Matrix::computeInverseMatrix(m.mat).mat;
+}
+
+vector<float> Matrix::multVector(vector<vector<float> > transform, vector<float> vect) {
+	vector<float> result(4, 0.0);
+	for (int i=0; i<4; i++) {
+		//multiply vector
+	}
+	return result;
+}
+
+Point Transformation::operator*(Point p) {
+	vector<float> mult(4, 1.0);
+	mult[0] = p.x;
+	mult[1] = p.y;
+	mult[2] = p.z;
+	vector<float> result = Matrix::multVector(mat, mult);
+	Point point(result[0], result[1], result[2]);
+	return point;
 }
 
 

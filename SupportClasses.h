@@ -107,12 +107,21 @@ public:
 	vector< vector <float> > mat;
 	Matrix();
 	Matrix(vector< vector<float> > input);
+	Matrix operator*(float n);
 	static Matrix createTranslationMatrix(float tx, float ty, float tz);
 	static Matrix createScalarMatrix(float sx, float sy, float sz);
-    static Matrix computeInverseMatrix(vector< vector <float> > input);
+	static vector<float> multVector(vector < vector <float> > transform, vector<float> vect);
+
+	//NEED TO FINISH
+    static Matrix computeInverseMatrix(vector < vector <float> > input);
     static float fourDeterminant(vector < vector <float> > input);
+
+private:    
     static float threeDeterminant(vector < vector <float> > input);
     static float twoDeterminant(vector < vector <float> > input);
+    static Matrix transposeMatrix(vector <vector <float> > input);
+    static Matrix adjunctMatrix(vector <vector <float> > input);
+    static float cofactorTerm(vector <vector <float> > input, int i, int j);
 };
 
 class Transformation {
@@ -121,6 +130,11 @@ public:
 	vector< vector <float> > minvt;
 	Transformation();
 	Transformation(vector< vector<float> > input);
+	Transformation(Matrix m);
+	Point operator*(Point p);
+	Vector3 operator*(Vector3 v);
+	Normal operator*(Normal n);
+	Ray operator*(Ray r);
 };
 
 
