@@ -109,10 +109,10 @@ public:
 	Matrix(vector< vector<float> > input);
 	static Matrix createTranslationMatrix(float tx, float ty, float tz);
 	static Matrix createScalarMatrix(float sx, float sy, float sz);
-	static Matrix computeInverseMatrix(vector< vector <float> > input);
-	static float fourDeterminant(vector < vector <float> > input);
-	static float threeDeterminant(vector < vector <float> > input);
-	static float twoDeterminant(vector < vector <float> > input);
+    static Matrix computeInverseMatrix(vector< vector <float> > input);
+    static float fourDeterminant(vector < vector <float> > input);
+    static float threeDeterminant(vector < vector <float> > input);
+    static float twoDeterminant(vector < vector <float> > input);
 };
 
 class Transformation {
@@ -121,4 +121,50 @@ public:
 	vector< vector <float> > minvt;
 	Transformation();
 	Transformation(vector< vector<float> > input);
+};
+
+
+// Shape Class
+class Shape;
+
+class Shape {
+
+public:
+    Shape();
+    // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
+    // tests if a ray intersects this shape, returns true if so
+    virtual bool intersect(Ray & ray);
+};
+
+// Sphere Class
+class Sphere;
+
+class Sphere : Shape{
+
+public:
+    Point center;
+    float radius;
+
+    Sphere();
+    Sphere(Point c, float r);
+    // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
+    // tests if a ray intersects this shape, returns true if so
+    virtual bool intersect(Ray & ray);
+};
+
+// Triangle Class
+
+class Triangle;
+
+class Triangle : Shape{
+
+public:
+    Triangle();
+
+    // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
+    // tests if a ray intersects this shape, returns true if so
+    virtual bool intersect(Ray & ray);
 };

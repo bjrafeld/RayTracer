@@ -328,3 +328,68 @@ Transformation::Transformation(vector< vector <float> > input) {
 	this->mat = input;
 	//this->minvt = Matrix::inverse(input);
 }
+
+
+// SHAPES
+Shape::Shape() {
+}
+
+bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local) {
+	// Override me!
+}
+
+bool Shape::intersect(Ray & ray) {
+	// Override me!
+	return false;
+}
+
+Sphere::Sphere() {
+}
+
+Sphere::Sphere(Point c, float r) {
+	this->center = c;
+	this->radius = r;
+}
+
+bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local) {
+	float A = Vector3::dotProduct(ray.dir, ray.dir);
+	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
+	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
+	float determinant = (B * B) - (4 * A * C);
+	if (determinant < 0) {
+		// no intersection
+		return false;
+	}
+	float t1 = (-B + sqrt((B*B) - (4 * A * C))) / (2 * A);
+	float t2 = (-B - sqrt((B*B) - (4 * A * C))) / (2 * A);
+	if (t1 < t2) {
+		*thit = t1;
+	} else {
+		*thit = t2;
+	}
+	local->pos = Point( (ray.pos.x + ((*thit) * ray.dir.x)), (ray.pos.y + ((*thit) * ray.dir.y)), (ray.pos.z + ((*thit) * ray.dir.z)) );
+	local->normal = Normal::pointSubtraction(local->pos, this->center);
+	return true;
+}
+
+bool Sphere::intersect(Ray & ray) {
+	float A = Vector3::dotProduct(ray.dir, ray.dir);
+	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
+	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
+	float determinant = (B * B) - (4 * A * C);
+	return (determinant >= 0);
+}
+
+Triangle::Triangle() {
+	// TODO
+}
+
+bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
+	// TODO
+	return false;
+}
+
+bool Triangle::intersect(Ray & ray) {
+	// TODO
+	return false;
+}
