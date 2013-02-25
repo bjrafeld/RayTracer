@@ -1,4 +1,6 @@
 #include <vector>
+#include <cmath>
+#include <iostream>
 
 using namespace std;
 
@@ -11,7 +13,9 @@ class Sample;
 class LocalGeo;
 class BRDF;
 class Matrix;
+class Transformation;
 
+//Vector3 Class
 class Vector3 {
 public:
 	float x, y, z;
@@ -37,6 +41,7 @@ public:
 	Point operator-(Point p);
 };
 
+//Normal Class
 class Normal {
 public:
 	float x, y, z;
@@ -44,6 +49,7 @@ public:
 	Normal(float x, float y, float z);
 	Normal operator+(Normal n);
 	Normal operator-(Normal n);
+	static Normal pointSubtraction(Point target_point, Point initial_point);
 private:
 	Normal normalize();
 };
@@ -88,6 +94,14 @@ public:
 	BRDF(Color ka, Color kd, Color ks, Color kr);
 };
 
+
+/*
+| [0][0] [1][0] [2][0] [3][0] |
+| [0][1] [1][1] [2][1] [3][1] |
+| [0][2] [1][2] [2][2] [3][2] |
+| [0][3] [1][3] [2][3] [3][3] |
+*/
+
 class Matrix {
 public:
 	vector< vector <float> > mat;
@@ -95,4 +109,16 @@ public:
 	Matrix(vector< vector<float> > input);
 	static Matrix createTranslationMatrix(float tx, float ty, float tz);
 	static Matrix createScalarMatrix(float sx, float sy, float sz);
+	static Matrix computeInverseMatrix(vector< vector <float> > input);
+	static float fourDeterminant(vector < vector <float> > input);
+	static float threeDeterminant(vector < vector <float> > input);
+	static float twoDeterminant(vector < vector <float> > input);
+};
+
+class Transformation {
+public:
+	vector< vector <float> > mat;
+	vector< vector <float> > minvt;
+	Transformation();
+	Transformation(vector< vector<float> > input);
 };

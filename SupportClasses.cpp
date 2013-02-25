@@ -1,8 +1,6 @@
-#include <cmath>
-
 #include "SupportClasses.h"
 
-inline float sqr(float x) {return x*x;}
+inline float sqr(float x) {return x * x;}
 
 Vector3::Vector3() {
 	this->x = 0.0;
@@ -113,6 +111,13 @@ Normal::Normal(float x, float y, float z) {
 		this->y = this->y/magnitude;
 		this->z = this->z/magnitude;
 	}
+}
+
+Normal Normal::pointSubtraction(Point target_point, Point initial_point) {
+	Point temp;
+	temp = target_point-initial_point;
+	Normal result(temp.x, temp.y, temp.z);
+	return result.normalize();
 }
 
 Normal Normal::normalize() {
@@ -230,7 +235,7 @@ Matrix::Matrix(vector <vector <float> > input) {
 }
 
 Matrix::Matrix() {
-	vector< vector<float> >(4, vector <float>(4, 0.0));
+	this->mat = vector< vector<float> >(4, vector <float>(4, 0.0));
 }
 
 Matrix Matrix::createTranslationMatrix(float tx, float ty, float tz) {
@@ -250,4 +255,47 @@ Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
 	input[2][2] = sz;
 	input[3][3] = 1.0;
 	return Matrix(input);
+}
+
+float Matrix::fourDeterminant(vector < vector <float> > input) {
+
+}
+
+float Matrix::threeDeterminant(vector< vector <float> > input) {
+	float a, b, c;
+	float colAarr[] = {input[0][1], input[0][2]};
+	float colBarr[] = {input[1][1], input[1][2]};
+	float colCarr[] = {input[2][1], input[2][2]};
+	vector<float> colA(colAarr, colAarr + sizeof(colAarr) / sizeof(float) );
+	vector<float> colB(colBarr, colBarr + sizeof(colBarr) / sizeof(float) );
+	vector<float> colC(colCarr, colCarr + sizeof(colCarr) / sizeof(float) );
+	vector< vector <float> > matAvect(2, vector<float>(2, 0.0));
+	vector< vector <float> > matBvect(2, vector<float>(2, 0.0));
+	vector< vector <float> > matCvect(2, vector<float>(2, 0.0));
+	matAvect[0]=colB;
+	matAvect[1]=colC;
+	matBvect[0]=colA;
+	matBvect[1]=colC;
+	matCvect[0]=colA;
+	matCvect[1]=colB;
+	a = input[0][0] * Matrix::twoDeterminant(matAvect);
+	b = input[1][0] * Matrix::twoDeterminant(matBvect);
+	c = input[2][0] * Matrix::twoDeterminant(matCvect);
+	return (float)(a-b+c);
+}
+
+float Matrix::twoDeterminant(vector < vector <float> > input) {
+	float ad = input[0][0] * input[1][1];
+	float bc = input[0][1] * input[1][0];
+	return (ad-bc);
+}
+
+Transformation::Transformation() {
+	this->mat = vector< vector < float> >(4, vector <float>(4, 0.0));
+	this->minvt = vector< vector <float> >(4, vector <float>(4, 0.0));
+}
+
+Transformation::Transformation(vector< vector <float> > input) {
+	this->mat = input;
+	//this->minvt = Matrix::inverse(input);
 }
