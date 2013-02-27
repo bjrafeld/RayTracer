@@ -219,4 +219,4 @@ public:
     BRDF constantBRDF;
     Material(BRDF brdf);
     void getBRDF(LocalGeo& local, BRDF* brdf);
-}
+};
