@@ -196,6 +196,12 @@ Color Color::operator-(Color c) {
 	return result;
 }
 
+void Color::setColor(float r, float g, float b) {
+	this->r = r;
+	this->g = g;
+	this->b = b;
+}
+
 Sample::Sample() {
 	x = 0.0;
 	y = 0.0;
@@ -265,29 +271,18 @@ Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
 	return Matrix(input);
 }
 
-Matrix Matrix::adjunctMatrix(vector <vector <float> > input) {
+Matrix Matrix::adjointMatrix(vector <vector <float> > input) {
 	vector< vector <float> > adjMat = Matrix::transposeMatrix(input).mat;
 	vector< vector <float> > result(4, vector<float>(4, 0.0));
-	for (int i=0; i<4; i++) {
-		for (int j=0; i<4; j++) {
-			result[i][j]=Matrix::cofactorTerm(adjMat, i, j);
-		}
-	}
+	Matrix::cofactorMatrix(adjMat);
 	return Matrix(result);
 }
 
-float Matrix::cofactorTerm(vector <vector <float> > input, int i, int j) {
-	for(int a=0; a<4; a++) {
-		int col=0;
-		for (int b=0; b<4; b++) {
-			if (a==i || b==j) {
-				continue;
-			} else {
-				//NOT SURE YET
-			}
-		}
+vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) {
+	vector<float> colA(3, 0.0);
+	vector<float> colB(3, 0.0);
+	vector<float> colC(3, 0.0);
 
-	}
 }
 
 Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
@@ -301,9 +296,13 @@ Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
 }
 
 Matrix Matrix::computeInverseMatrix(vector < vector <float> > input) {
-	//TODO: Check for zero determinant
 	float determinant = Matrix::fourDeterminant(input);
-	return (Matrix::adjunctMatrix(input) * (1/determinant));
+	if(determinant==0) {
+		cout << "This should not happen, and if this is being printed" 
+		<< " then something is really not working!!!" << endl;
+		return Matrix();
+	}
+	return (Matrix::adjointMatrix(input) * (1/determinant));
 }
 
 float Matrix::fourDeterminant(vector < vector <float> > input) {
@@ -384,10 +383,18 @@ Transformation::Transformation(Matrix m) {
 }
 
 vector<float> Matrix::multVector(vector<vector<float> > transform, vector<float> vect) {
-	vector<float> result(4, 0.0);
+	vector<float> resultHolder(4, 0.0);
 	for (int i=0; i<4; i++) {
-		//multiply vector
+		float a = transform[i][0]*vect[0];
+		float b = transform[i][1]*vect[1];
+		float c = transform[i][2]*vect[2];
+		float d = transform[i][3]*vect[3];
+		resultHolder[i] = a+b+c+d;
 	}
+	vector<float> result(3, 0.0);
+	result[0] = resultHolder[0]/resultHolder[3];
+	result[1] = resultHolder[1]/resultHolder[3];
+	result[2] = resultHolder[2]/resultHolder[3];
 	return result;
 }
 
@@ -399,6 +406,26 @@ Point Transformation::operator*(Point p) {
 	vector<float> result = Matrix::multVector(mat, mult);
 	Point point(result[0], result[1], result[2]);
 	return point;
+}
+
+Vector3 Transformation::operator*(Vector3 v) {
+	vector<float> mult(4, 1.0);
+	mult[0] = v.x;
+	mult[1] = v.y;
+	mult[2] = v.z;
+	vector<float> result = Matrix::multVector(mat, mult);
+	Vector3 vect(result[0], result[1], result[2]);
+	return vect;
+}
+
+Normal Transformation::operator*(Normal n) {
+	vector<float> mult(4, 0.0);
+	mult[0] = n.x;
+	mult[1] = n.y;
+	mult[2] = n.z;
+	vector<float> result = Matrix::multVector(mat, mult);
+	Normal normal(result[0], result[1], result[2]);
+	return normal;
 }
 
 
