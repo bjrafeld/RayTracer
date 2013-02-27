@@ -14,6 +14,13 @@ class LocalGeo;
 class BRDF;
 class Matrix;
 class Transformation;
+class Shape;
+class Sphere;
+class Triangle;
+class Intersection;
+class Primitive;
+class Material;
+class GeometricPrimitive;
 
 //Vector3 Class
 class Vector3 {
@@ -125,23 +132,17 @@ public:
 
 
 // Shape Class
-class Shape;
-
 class Shape {
-
 public:
     Shape();
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
-    virtual bool intersect(Ray & ray);
+    virtual bool intersectP(Ray & ray);
 };
 
 // Sphere Class
-class Sphere;
-
 class Sphere : Shape{
-
 public:
     Point center;
     float radius;
@@ -151,20 +152,57 @@ public:
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
-    virtual bool intersect(Ray & ray);
+    virtual bool intersectP(Ray & ray);
 };
 
 // Triangle Class
 
-class Triangle;
-
 class Triangle : Shape{
-
 public:
     Triangle();
 
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
-    virtual bool intersect(Ray & ray);
+    virtual bool intersectP(Ray & ray);
 };
+
+// Intersection
+class Intersection {
+public:
+    Intersection();
+    LocalGeo localGeo;
+    Primitive* primitive;
+};
+
+// Primitive
+class Primitive {
+public:
+    virtual bool intersect(Ray & ray, float* thit, Intersection* in) = 0;
+    virtual bool intersectP(Ray & ray) = 0;
+    virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
+};
+
+// GeometricPrimitive
+class GeometricPrimitive : Primitive {
+public:
+    Transformation objToWorld, worldToObj;
+    Shape* shape;
+    Material* mat;
+    GeometricPrimitive();
+    virtual bool intersect(Ray & ray, float* thit, Intersection* in);
+    virtual bool intersectP(Ray & ray);
+    virtual void getBRDF(LocalGeo& local, BRDF* brdf);
+};
+
+// AggregatePrimitive
+// TODO
+
+// Material
+// Stores a constant material used for shading calculations
+class Material {
+public:
+    BRDF constantBRDF;
+    Material(BRDF brdf);
+    void getBRDF(LocalGeo& local, BRDF* brdf);
+}

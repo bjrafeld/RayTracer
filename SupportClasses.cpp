@@ -309,7 +309,7 @@ bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	// Override me!
 }
 
-bool Shape::intersect(Ray & ray) {
+bool Shape::intersectP(Ray & ray) {
 	// Override me!
 	return false;
 }
@@ -343,7 +343,7 @@ bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	return true;
 }
 
-bool Sphere::intersect(Ray & ray) {
+bool Sphere::intersectP(Ray & ray) {
 	float A = Vector3::dotProduct(ray.dir, ray.dir);
 	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
 	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
@@ -360,7 +360,49 @@ bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	return false;
 }
 
-bool Triangle::intersect(Ray & ray) {
+bool Triangle::intersectP(Ray & ray) {
 	// TODO
 	return false;
+}
+
+// Intersection
+Intersection::Intersection() {
+}
+
+// Geometric Primitive
+GeometricPrimitive::GeometricPrimitive() {
+}
+
+bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
+	Ray objRay = this->worldToObj * ray;
+	LocalGeo objLocal;
+	if (!this->shape->intersect(objRay, thit, &objLocal)) return false;
+	in->primitive = this;
+	in->localGeo = this->objToWorld * objLocal;
+	return true;
+}
+
+bool GeometricPrimitive::intersectP(Ray & ray) {
+	Ray objRay = this->worldToObj * ray;
+	return this->shape->intersectP(objRay);
+}
+
+void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
+	this->mat->getBRDF(local, brdf);
+}
+
+// AggregatePrimitive
+// TODO
+
+// Material
+Material::Material(BRDF brdf) {
+	this->constantBRDF = brdf;
+}
+
+void Material::getBRDF(LocalGeo& local, BRDF* brdf) {
+	//(*brdf) = this->constantBRDF; // possibly buggy? possibly would work? woof woof
+	brdf->ka = this->constantBRDF.ka;
+	brdf->kd = this->constantBRDF.kd;
+	brdf->ks = this->constantBRDF.ks;
+	brdf->kr = this->constantBRDF.kr;
 }
