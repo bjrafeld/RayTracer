@@ -68,6 +68,7 @@ public:
 	float r, g, b;
 	Color();
 	Color(float r, float g, float b);
+	void setColor(float r, float g, float b);
 	Color operator+(Color c);
 	Color operator-(Color c);
 };
@@ -115,13 +116,13 @@ public:
 	//NEED TO FINISH
     static Matrix computeInverseMatrix(vector < vector <float> > input);
     static float fourDeterminant(vector < vector <float> > input);
+    static vector<vector <float> > cofactorMatrix(vector <vector <float> > input);
 
 private:    
     static float threeDeterminant(vector < vector <float> > input);
     static float twoDeterminant(vector < vector <float> > input);
     static Matrix transposeMatrix(vector <vector <float> > input);
-    static Matrix adjunctMatrix(vector <vector <float> > input);
-    static float cofactorTerm(vector <vector <float> > input, int i, int j);
+    static Matrix adjointMatrix(vector <vector <float> > input);
 };
 
 class Transformation {
