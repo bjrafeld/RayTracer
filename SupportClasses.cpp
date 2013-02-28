@@ -245,11 +245,13 @@ Matrix::Matrix() {
 }
 
 Matrix Matrix::operator*(float n) {
+	vector< vector <float> > m = this->mat;
 	for (int i=0; i<4; i++) {
 		for (int j=0; j<4; j++) {
-			mat[i][j] = n*mat[i][j];
+			m[i][j] = n*m[i][j];
 		}
 	}
+	return Matrix(m);
 }
 
 Matrix Matrix::createTranslationMatrix(float tx, float ty, float tz) {
@@ -540,6 +542,7 @@ Shape::Shape() {
 
 bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	// Override me!
+	return false;
 }
 
 bool Shape::intersectP(Ray & ray) {

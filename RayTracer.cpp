@@ -39,8 +39,20 @@ Camera::Camera(Point p) {
 	this->pos = p;
 }
 
+void Camera::generateRay(Sample & sample, Ray* ray) {
+
+}
+
 Film::Film(int screenWidth, int screenHeight) {
 	this->pixelImage = vector <vector <Color> >(screenWidth, vector<Color>(screenHeight, Color()));
+}
+
+void Film::commit(Sample & sample, Color & color) {
+
+}
+
+void Film::writeImage() {
+	
 }
 
 Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz) {
