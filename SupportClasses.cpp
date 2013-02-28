@@ -279,10 +279,72 @@ Matrix Matrix::adjointMatrix(vector <vector <float> > input) {
 }
 
 vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) {
-	vector<float> colA(3, 0.0);
-	vector<float> colB(3, 0.0);
-	vector<float> colC(3, 0.0);
+	vector <vector <float> > result(4, vector<float>(4, 0.0));
 
+	float colAarr[] = {input[0][1], input[0][2], input[0][3]};
+	float colBarr[] = {input[1][1], input[1][2], input[1][3]};
+	float colCarr[] = {input[2][1], input[2][2], input[2][3]};
+	float colDarr[] = {input[3][1], input[3][2], input[3][3]};
+	vector<float> colA(colAarr, colAarr + sizeof(colAarr) / sizeof(float) );
+	vector<float> colB(colBarr, colBarr + sizeof(colBarr) / sizeof(float) );
+	vector<float> colC(colCarr, colCarr + sizeof(colCarr) / sizeof(float) );
+	vector<float> colD(colDarr, colDarr + sizeof(colDarr) / sizeof(float) );
+	vector<vector <float> > placeholder(3, vector<float>(3, 0.0));
+	placeholder[0] = colB;
+	placeholder[1] = colC;
+	placeholder[2] = colD;
+	result[0][0] = Matrix::threeDeterminant(placeholder);
+	placeholder[0] = colA;
+	result[1][0] = Matrix::threeDeterminant(placeholder);
+	placeholder[1] = colB;
+	result[2][0] = Matrix::threeDeterminant(placeholder);
+	placeholder[2] = colC;
+	result[3][0] = Matrix::threeDeterminant(placeholder);
+
+	colA[0] = input[0][0];
+	colB[0] = input[1][0];
+	colC[0] = input[2][0];
+	colD[0] = input[3][0];
+	placeholder[0] = colB;
+	placeholder[1] = colC;
+	placeholder[2] = colD;
+	result[0][1] = Matrix::threeDeterminant(placeholder);
+	placeholder[0] = colA;
+	result[1][1] = Matrix::threeDeterminant(placeholder);
+	placeholder[1] = colB;
+	result[2][1] = Matrix::threeDeterminant(placeholder);
+	placeholder[2] = colC;
+	result[3][1] = Matrix::threeDeterminant(placeholder);
+
+	colA[1] = input[0][1];
+	colB[1] = input[1][1];
+	colC[1] = input[2][1];
+	colD[1] = input[3][1];
+	placeholder[0] = colB;
+	placeholder[1] = colC;
+	placeholder[2] = colD;
+	result[0][2] = Matrix::threeDeterminant(placeholder);
+	placeholder[0] = colA;
+	result[1][2] = Matrix::threeDeterminant(placeholder);
+	placeholder[1] = colB;
+	result[2][2] = Matrix::threeDeterminant(placeholder);
+	placeholder[2] = colC;
+	result[3][2] = Matrix::threeDeterminant(placeholder);
+
+	colA[2] = input[0][2];
+	colB[2] = input[1][2];
+	colC[2] = input[2][2];
+	colD[2] = input[3][2];
+	placeholder[0] = colB;
+	placeholder[1] = colC;
+	placeholder[2] = colD;
+	result[0][3] = Matrix::threeDeterminant(placeholder);
+	placeholder[0] = colA;
+	result[1][3] = Matrix::threeDeterminant(placeholder);
+	placeholder[1] = colB;
+	result[2][3] = Matrix::threeDeterminant(placeholder);
+	placeholder[2] = colC;
+	result[3][3] = Matrix::threeDeterminant(placeholder);
 }
 
 Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
@@ -367,22 +429,51 @@ float Matrix::twoDeterminant(vector < vector <float> > input) {
 	return (ad-bc);
 }
 
+/* Only works for 4x4 Matrices*/
+float Matrix::determinant() {
+	return Matrix::fourDeterminant(this->mat);
+}
+
+Matrix Matrix::transpose() {
+	return Matrix::transposeMatrix(this->mat);
+}
+
+Matrix Matrix::inverse() {
+	return Matrix::computeInverseMatrix(this->mat);
+}
+
+Matrix matMult(Matrix m1, Matrix m2) {
+	vector <vector <float> > a = m1.mat;
+	vector <vector <float> > b = m2.mat;
+	vector <vector <float> > result(4, vector<float>(4, 0.0));
+	for (int col=0; col<4; col++) {
+		for (int row=0; row<4; row++) {
+			for (int inner=0; inner<4; inner++) {
+				result[col][row] += a[inner][row]*b[col][inner];
+			}
+		}
+	}
+	return Matrix(result);
+}
+
 Transformation::Transformation() {
 	this->mat = vector< vector < float> >(4, vector <float>(4, 0.0));
 	this->minvt = vector< vector <float> >(4, vector <float>(4, 0.0));
 }
 
 Transformation::Transformation(vector< vector <float> > input) {
-	this->mat = input;
-	this->minvt = Matrix::computeInverseMatrix(input).mat;
+	Matrix m(input);
+	this->mat = m;
+	this->minvt = m.inverse();
 }
 
 Transformation::Transformation(Matrix m) {
-	this->mat=m.mat;
-	this->minvt = Matrix::computeInverseMatrix(m.mat).mat;
+	this->mat=m;
+	this->minvt = m.inverse();
 }
 
-vector<float> Matrix::multVector(vector<vector<float> > transform, vector<float> vect) {
+vector<float> Matrix::multVector(Matrix m, vector<float> vect) {
+	vector< vector <float> > transform = m.mat;
 	vector<float> resultHolder(4, 0.0);
 	for (int i=0; i<4; i++) {
 		float a = transform[i][0]*vect[0];

@@ -111,24 +111,27 @@ public:
 	Matrix operator*(float n);
 	static Matrix createTranslationMatrix(float tx, float ty, float tz);
 	static Matrix createScalarMatrix(float sx, float sy, float sz);
-	static vector<float> multVector(vector < vector <float> > transform, vector<float> vect);
-
-	//NEED TO FINISH
-    static Matrix computeInverseMatrix(vector < vector <float> > input);
-    static float fourDeterminant(vector < vector <float> > input);
-    static vector<vector <float> > cofactorMatrix(vector <vector <float> > input);
+	static vector<float> multVector(Matrix transform, vector<float> vect);
+	float determinant(); //Only for 4x4 Matrices
+	Matrix transpose();  //4x4
+	Matrix inverse();	 //4x4
+	static Matrix matMult(Matrix m1, Matrix m2);
+    
 
 private:    
     static float threeDeterminant(vector < vector <float> > input);
     static float twoDeterminant(vector < vector <float> > input);
-    static Matrix transposeMatrix(vector <vector <float> > input);
     static Matrix adjointMatrix(vector <vector <float> > input);
+    static Matrix computeInverseMatrix(vector < vector <float> > input);
+    static float fourDeterminant(vector < vector <float> > input);
+    static Matrix transposeMatrix(vector <vector <float> > input);
+    static vector<vector <float> > cofactorMatrix(vector <vector <float> > input);
 };
 
 class Transformation {
 public:
-	vector< vector <float> > mat;
-	vector< vector <float> > minvt;
+	Matrix mat;
+	Matrix minvt;
 	Transformation();
 	Transformation(vector< vector<float> > input);
 	Transformation(Matrix m);
