@@ -21,3 +21,30 @@ bool getSample(Sample* sample) {
 	this->xPixel += 1;
 	this->yPixel += 1;
 }
+
+// Lights
+PointLight::PointLight() {
+}
+
+PointLight::PointLight(Point location, Color color) {
+	this->location = location;
+	this->color = color;
+}
+
+void PointLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
+	lray->pos = local.pos;
+	lray->dir = Vector3::pointSubtraction(this->location, local.pos);
+}
+
+DirectionalLight::DirectionalLight() {
+}
+
+DirectionalLight::DirectionalLight(Vector3 direction, Color color) {
+	this->direction = direction;
+	this->color = color;
+}
+
+void DirectionalLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
+	lray->pos = local.pos;
+	lray->dir = this->direction * -1.0;
+}
