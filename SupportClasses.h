@@ -144,8 +144,9 @@ public:
 	Transformation(Matrix m);
 	Point operator*(Point p);
 	Vector3 operator*(Vector3 v);
-	Normal operator*(Normal n);
+	Normal operator*(Normal n);		//Needs to be changed
 	Ray operator*(Ray r);
+	LocalGeo operator*(LocalGeo l);
 };
 
 
