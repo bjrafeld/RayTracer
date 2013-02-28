@@ -1,4 +1,5 @@
 #include "SupportClasses.h"
+#include "FreeImage.h"
 
 class RayTracer;
 class Sampler;
