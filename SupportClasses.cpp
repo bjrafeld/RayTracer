@@ -345,6 +345,8 @@ vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) 
 	result[2][3] = Matrix::threeDeterminant(placeholder);
 	placeholder[2] = colC;
 	result[3][3] = Matrix::threeDeterminant(placeholder);
+
+	return result;
 }
 
 Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
@@ -510,15 +512,27 @@ Vector3 Transformation::operator*(Vector3 v) {
 }
 
 Normal Transformation::operator*(Normal n) {
-	vector<float> mult(4, 0.0);
+	//TODO
+	vector<float> mult(4, 1.0);
 	mult[0] = n.x;
 	mult[1] = n.y;
 	mult[2] = n.z;
-	vector<float> result = Matrix::multVector(mat, mult);
+	vector<float> result = Matrix::multVector(minvt.transpose(), mult);
 	Normal normal(result[0], result[1], result[2]);
 	return normal;
 }
 
+Ray Transformation::operator*(Ray r) {
+	Point p = (*this) * r.pos;
+	Vector3 v = (*this) * r.dir;
+	return Ray(p, v, r.t_min, r.t_max);
+}
+
+LocalGeo Transformation::operator*(LocalGeo l) {
+	Normal n = (*this) * l.normal;
+	Point p = (*this) * l.pos;
+	return LocalGeo(p, n);
+}
 
 // SHAPES
 Shape::Shape() {
