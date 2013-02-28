@@ -1,3 +1,4 @@
+*.png
 *.o
 .DS_store
 RayTracer
