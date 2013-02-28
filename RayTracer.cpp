@@ -14,10 +14,57 @@ Sampler::Sampler(int screenWidth, int screenHeight) {
 	xPixel = yPixel = 0;
 }
 
-bool getSample(Sample* sample) {
+bool Sampler::getSample(Sample* sample) {
 	// update this method in the future to allow for multiple sampling / anti-aliasing 
 	sample->x = this->xPixel;
 	sample->y = this->yPixel;
-	this->xPixel += 1;
-	this->yPixel += 1;
+	if(xPixel >= screenWidth && yPixel < screenHeight) {
+		xPixel = 0;
+		yPixel += 1;
+		return true;
+	} else if (xPixel >= screenWidth && yPixel >= screenHeight) {
+		return false;
+	} else {
+		xPixel += 1;
+		return true;
+	}
+}
+
+Camera::Camera(float x, float y, float z) {
+	Point p(x, y, z);
+	this->pos = p;
+}
+
+Camera::Camera(Point p) {
+	this->pos = p;
+}
+
+Film::Film(int screenWidth, int screenHeight) {
+	this->pixelImage = vector <vector <Color> >(screenWidth, vector<Color>(screenHeight, Color()));
+}
+
+Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz) {
+	this->screenHeight = screenHeight;
+	this->screenWidth = screenWidth;
+	this->camerapos = Point(camerax, cameray, cameraz);
+}
+
+void Scene::render() {
+	Sampler sampler(screenWidth, screenHeight);
+	Sample sample;
+	Ray ray;
+	RayTracer raytracer;
+	Color color;
+	Camera camera(camerapos);
+	Film film(screenWidth, screenHeight);
+	while(!sampler.getSample(&sample)) {
+		camera.generateRay(sample, &ray);
+		raytracer.trace(ray, 0, &color);
+		film.commit(sample, color);
+	}
+	film.writeImage();
+}
+
+int main(int argc, char *argv[]) {
+
 }
