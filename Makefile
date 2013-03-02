@@ -2,4 +2,4 @@
 all: main
 main: 
 	g++ -g -Wall -O2 -fmessage-length=0 -c -l./ RayTracer.cpp SupportClasses.cpp
-	g++ -g -Wall -O2 -fmessage-length=0 -I./ -L./ -lfreeimage RayTracer.o SupportClasses.o libfreeimage.a -o RayTracer
+	g++ -g -Wall -O2 -fmessage-length=0 -I./ -L./ RayTracer.o SupportClasses.o -lfreeimage libfreeimage.a -o RayTracer
