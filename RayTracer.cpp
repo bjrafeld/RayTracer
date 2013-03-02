@@ -1,6 +1,7 @@
 
 #include "SupportClasses.h"
 #include "RayTracer.h"
+#include <cstdlib>
 
 void RayTracer::trace(Ray & ray, int depth, Color* color) {
 	if(depth >1) {
@@ -87,7 +88,7 @@ void Film::writeImage() {
 	FIBITMAP* bitmap = FreeImage_Allocate(screenWidth, screenHeight, 24);
 	RGBQUAD color;
 
-	if(!bitmap)
+	if(!bitmap) 
 		exit(-1);
 
 	for (int width=0; width<screenWidth; width++) {
