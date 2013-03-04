@@ -653,6 +653,8 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 		}
 	}
 	//Assumes that intersectP has been called -- no false returned
+	delete closestInteresection;
+	delete new_Hit;
 	return true;
 }
 

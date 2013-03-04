@@ -44,6 +44,9 @@ Sampler::Sampler(int screenWidth, int screenHeight) {
 
 bool Sampler::getSample(Sample* sample) {
 	// update this method in the future to allow for multiple sampling / anti-aliasing 
+	if (yPixel >= screenHeight) {
+		return false;
+	}
 	sample->x = xPixel;
 	sample->y = yPixel;
 	xPixel += 1;
@@ -51,9 +54,6 @@ bool Sampler::getSample(Sample* sample) {
 	if (xPixel >= screenWidth) {
 		xPixel = 0;
 		yPixel++;
-		if (yPixel >= screenHeight) {
-			return false;
-		}
 	} 
 	return true;
 }
@@ -116,11 +116,11 @@ Camera::Camera(Point p, int screenWidth, int screenHeight) {
 void Camera::generateRay(Sample & sample, Ray* ray) {
 	float u = l + ( ((r-l)*(sample.x + 0.5)) / screenWidth);
 	float v = b + ( ((t - b)*(sample.y + 0.5)) / screenHeight);
-	Vector3 P = (((LL*v)+(UL*(1.0-v))) * u) + (((LR*v)+(UR*(1.0-v))) * (1.0-u));
-	//float w = -1;
-	//ray->dir = Vector3(u, v, w);
+	float w = -1;
+	ray->dir = Vector3(u, v, w);
 	ray->pos = this->pos;
-	ray->dir = P; // error: does this work? will P go out of scope?
+	//Vector3 P = (((LL*v)+(UL*(1.0-v))) * u) + (((LR*v)+(UR*(1.0-v))) * (1.0-u));
+	//ray->dir = P;
 }
 
 Film::Film(int screenWidth, int screenHeight, string filename) {
@@ -178,7 +178,7 @@ void Scene::render() {
 	Ray ray;
 	Color color;
 	Film film(screenWidth, screenHeight, filename);
-	while(!sampler.getSample(&sample)) {
+	while(sampler.getSample(&sample)) {
 		camera.generateRay(sample, &ray);
 		raytracer.trace(ray, 0, &color);
 		film.commit(sample, color);
@@ -197,7 +197,7 @@ int main(int argc, char *argv[]) {
 
 	//Temporary Scene Construction
 	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 0.5);
+	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 1.0);
 	sphere.mat = new Material(BRDF());
 	sphere.color = Color(1.0, 0.0, 0.0);
 	
@@ -218,8 +218,9 @@ int main(int argc, char *argv[]) {
 	identity[1] = column1;
 	identity[2] = column2;
 	identity[3] = column3;
-	Matrix m(identity);
 
+
+	Matrix m(identity);
 	sphere.objToWorld = Transformation(m);
 	sphere.worldToObj = Transformation(m);
 	
