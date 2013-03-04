@@ -609,6 +609,10 @@ Intersection::Intersection() {
 GeometricPrimitive::GeometricPrimitive() {
 }
 
+Color GeometricPrimitive::getColor() {
+	return this->color;
+}
+
 bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 	Ray objRay = this->worldToObj * ray;
 	LocalGeo objLocal;
@@ -628,7 +632,39 @@ void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
 }
 
 // AggregatePrimitive
-// TODO
+AggregatePrimitive::AggregatePrimitive() {
+	
+}
+
+AggregatePrimitive::AggregatePrimitive(vector<GeometricPrimitive*> list) {
+	this->allPrimitives = list;
+}
+
+bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
+	float *new_Hit;
+	Intersection *closestInteresection;
+	new_Hit = new float(99999.0); // how fucking obvious is this??
+	closestInteresection = new Intersection();
+	for(unsigned int i=0; i<allPrimitives.size(); i++) {
+		allPrimitives[i]->intersect(ray, new_Hit, closestInteresection);
+		if((*new_Hit) < (*thit)) {
+			(*thit) = (*new_Hit);
+			(*in) = (*closestInteresection);
+		}
+	}
+	//Assumes that intersectP has been called -- no false returned
+	return true;
+}
+
+//Should be called before intersect to check
+bool AggregatePrimitive::intersectP(Ray & ray) {
+	for(unsigned int i=0; i<allPrimitives.size(); i++) {
+		if (allPrimitives[i]->intersectP(ray)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 // Material
 Material::Material(BRDF brdf) {

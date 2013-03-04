@@ -1,13 +1,39 @@
 
-#include "SupportClasses.h"
 #include "RayTracer.h"
 #include <cstdlib>
 
+RayTracer::RayTracer() {
+	
+}
+
+RayTracer::RayTracer(Scene* scene) {
+	this->scene = scene;
+}
+
 void RayTracer::trace(Ray & ray, int depth, Color* color) {
+
+	float thit = 1000000.0;
+	Intersection in;
+
 	if(depth >1) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
+	if(!scene->aggPrimitives.intersectP(ray)) {
+		color->setColor(0.0, 0.0, 0.0);
+		return;
+	} else {
+		scene->aggPrimitives.intersect(ray, &thit, &in);
+	}
+
+	BRDF brdf;
+	in.primitive->getBRDF(in.localGeo, &brdf);
+	*color = in.primitive->getColor();
+	for(unsigned int i=0; i<scene->allSceneLights.size(); i++) {
+		//scene->allSceneLights[i].generateLightRay(in.local, )
+		//TODO: FINISH THIS SHIT LATER
+	}
+
 }
 
 Sampler::Sampler(int screenWidth, int screenHeight) {
@@ -18,10 +44,10 @@ Sampler::Sampler(int screenWidth, int screenHeight) {
 
 bool Sampler::getSample(Sample* sample) {
 	// update this method in the future to allow for multiple sampling / anti-aliasing 
-	sample->x = this->xPixel;
-	sample->y = this->yPixel;
-	this->xPixel += 1;
-	this->yPixel += 1;
+	sample->x = xPixel;
+	sample->y = yPixel;
+	xPixel += 1;
+	yPixel += 1;
 	if (xPixel >= screenWidth) {
 		xPixel = 0;
 		yPixel++;
@@ -59,17 +85,42 @@ void DirectionalLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color
 	lray->dir = this->direction * -1.0;
 }
 
-Camera::Camera(float x, float y, float z) {
-	Point p(x, y, z);
-	this->pos = p;
+Camera::Camera() {
 }
 
-Camera::Camera(Point p) {
+Camera::Camera(float x, float y, float z, int screenWidth, int screenHeight) {
+	Point p(x, y, z);
 	this->pos = p;
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
+	this->l = this->b = -1.0;
+	this->r = this->t = 1.0;
+	this->UL = Vector3(-1.0, 1.0, -1.0);
+	this->UR = Vector3(1.0, 1.0, -1.0);
+	this->LL = Vector3(-1.0, -1.0, -1.0);
+	this->LR = Vector3(1.0, -1.0, -1.0);
+}
+
+Camera::Camera(Point p, int screenWidth, int screenHeight) {
+	this->pos = p;
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
+	this->l = this->b = -1.0;
+	this->r = this->t = 1.0;
+	this->UL = Vector3(-1.0, 1.0, -1.0);
+	this->UR = Vector3(1.0, 1.0, -1.0);
+	this->LL = Vector3(-1.0, -1.0, -1.0);
+	this->LR = Vector3(1.0, -1.0, -1.0);
 }
 
 void Camera::generateRay(Sample & sample, Ray* ray) {
-
+	float u = l + ( ((r-l)*(sample.x + 0.5)) / screenWidth);
+	float v = b + ( ((t - b)*(sample.y + 0.5)) / screenHeight);
+	Vector3 P = (((LL*v)+(UL*(1.0-v))) * u) + (((LR*v)+(UR*(1.0-v))) * (1.0-u));
+	//float w = -1;
+	//ray->dir = Vector3(u, v, w);
+	ray->pos = this->pos;
+	ray->dir = P; // error: does this work? will P go out of scope?
 }
 
 Film::Film(int screenWidth, int screenHeight, string filename) {
@@ -117,15 +168,15 @@ Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, fl
 	this->screenHeight = screenHeight;
 	this->screenWidth = screenWidth;
 	this->camerapos = Point(camerax, cameray, cameraz);
+	this->raytracer = RayTracer(this);
+	this->camera = Camera(this->camerapos, screenWidth, screenHeight);
 }
 
 void Scene::render() {
 	Sampler sampler(screenWidth, screenHeight);
 	Sample sample;
 	Ray ray;
-	RayTracer raytracer;
 	Color color;
-	Camera camera(camerapos);
 	Film film(screenWidth, screenHeight, filename);
 	while(!sampler.getSample(&sample)) {
 		camera.generateRay(sample, &ray);
@@ -139,10 +190,43 @@ int main(int argc, char *argv[]) {
 	//filename argument
 	//obj file arg (Camera pos, object poss, lights, etc) -> obj parser
 	//resolution args
-
 	string arg = argv[1];
 	int width = atoi(argv[2]);
 	int height = atoi(argv[3]);
 	Scene scene(width, height, 0.0, 0.0, 0.0, arg);
+
+	//Temporary Scene Construction
+	GeometricPrimitive sphere;
+	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 0.5);
+	sphere.mat = new Material(BRDF());
+	sphere.color = Color(1.0, 0.0, 0.0);
+	
+	vector<float> column0(4);
+	column0[0] = 1.0;
+	column0[1] = column0[2] = column0[3] = 0.0;
+	vector<float> column1(4);
+	column1[1] = 1.0;
+	column1[0] = column1[2] = column1[3] = 0.0;
+	vector<float> column2(4);
+	column2[2] = 1.0;
+	column2[0] = column2[1] = column2[3] = 0.0;
+	vector<float> column3(4);
+	column3[3] = 1.0;
+	column3[0] = column3[1] = column3[2] = 0.0;
+	vector <vector <float> > identity(4);
+	identity[0] = column0;
+	identity[1] = column1;
+	identity[2] = column2;
+	identity[3] = column3;
+	Matrix m(identity);
+
+	sphere.objToWorld = Transformation(m);
+	sphere.worldToObj = Transformation(m);
+	
+	vector<GeometricPrimitive*> list;
+	list.push_back(&sphere);
+	scene.aggPrimitives = AggregatePrimitive(list);
+
 	scene.render();
+	
 }
