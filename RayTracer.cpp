@@ -1,4 +1,11 @@
 
+/*POSSIBLE FUCK-UPS
+
+- Flipped pixel indices (orientation could be upside-down)
+- Check for color flips (FreeImage uses mod255)
+- 
+*/
+
 #include "RayTracer.h"
 #include <cstdlib>
 
@@ -19,12 +26,11 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
-	if(!scene->aggPrimitives.intersectP(ray)) {
+	if(!scene->aggPrimitives.intersect(ray, &thit, &in, 1.0, 999999.0)) {
 		color->setColor(0.0, 0.0, 0.0);
+		//cout<<"Not intersecting anything\n"<<endl;
 		return;
-	} else {
-		scene->aggPrimitives.intersect(ray, &thit, &in);
-	}
+	} 
 
 	BRDF brdf;
 	in.primitive->getBRDF(in.localGeo, &brdf);
@@ -50,7 +56,6 @@ bool Sampler::getSample(Sample* sample) {
 	sample->x = xPixel;
 	sample->y = yPixel;
 	xPixel += 1;
-	yPixel += 1;
 	if (xPixel >= screenWidth) {
 		xPixel = 0;
 		yPixel++;
@@ -132,6 +137,10 @@ Film::Film(int screenWidth, int screenHeight, string filename) {
 
 void Film::commit(Sample & sample, Color & color) {
 	//May need to convert from [0, 1] to [0, 255]
+	color.r = color.r*255.0;
+	color.g = color.g*255.0;
+	color.b = color.b*255.0;
+
 	pixelImage[sample.x][sample.y] = color;
 	color.r = 0.0;
 	color.g = 0.0;
@@ -157,7 +166,7 @@ void Film::writeImage() {
 	}
 
 	if(FreeImage_Save(FIF_PNG, bitmap, this->filename, 0)) {
-		cout << "saved" <<filename << endl;
+		cout << "saved " << filename << endl;
 	}
 
 	FreeImage_DeInitialise();
@@ -180,6 +189,7 @@ void Scene::render() {
 	Film film(screenWidth, screenHeight, filename);
 	while(sampler.getSample(&sample)) {
 		camera.generateRay(sample, &ray);
+		//cout<<"Sample.x = "<<sample.x<<" Sample.y = "<<sample.y<<endl;
 		raytracer.trace(ray, 0, &color);
 		film.commit(sample, color);
 	}
@@ -197,7 +207,7 @@ int main(int argc, char *argv[]) {
 
 	//Temporary Scene Construction
 	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 1.0);
+	sphere.shape = new Sphere(Point(0.0, 0.0, 0.0), 0.5);
 	sphere.mat = new Material(BRDF());
 	sphere.color = Color(1.0, 0.0, 0.0);
 	

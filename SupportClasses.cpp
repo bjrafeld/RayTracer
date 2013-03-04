@@ -363,7 +363,6 @@ Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
 
 Matrix Matrix::computeInverseMatrix(vector < vector <float> > input) {
 	float determinant = Matrix::fourDeterminant(input);
-	cout<<"Determinant: "<<determinant<<endl;
 	if(determinant==0) {
 		cout << "This should not happen, and if this is being printed" 
 		<< " then something is really not working!!!" << endl;
@@ -552,12 +551,12 @@ LocalGeo Transformation::operator*(LocalGeo l) {
 Shape::Shape() {
 }
 
-bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local) {
+bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max) {
 	// Override me!
 	return false;
 }
 
-bool Shape::intersectP(Ray & ray) {
+bool Shape::intersectP(Ray & ray, const float thit_min, const float thit_max) {
 	// Override me!
 	return false;
 }
@@ -570,7 +569,7 @@ Sphere::Sphere(Point c, float r) {
 	this->radius = r;
 }
 
-bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local) {
+bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max) {
 	float A = Vector3::dotProduct(ray.dir, ray.dir);
 	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
 	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
@@ -581,17 +580,31 @@ bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	}
 	float t1 = (-B + sqrt((B*B) - (4 * A * C))) / (2 * A);
 	float t2 = (-B - sqrt((B*B) - (4 * A * C))) / (2 * A);
-	if (t1 < t2) {
+
+	bool t1_out = ((t1 <= thit_min) || (t1 >=thit_max));
+	bool t2_out = ((t2 <= thit_min) || (t2 >=thit_max));
+	//Checks to see that both t1 and t2 are out of bounds
+	if(t1_out && t2_out) {
+		return false;
+	} else if (t1_out) {
+		*thit = t2;
+	} else if (t2_out) {
 		*thit = t1;
 	} else {
-		*thit = t2;
+
+		if (t1 < t2) {
+			*thit = t1;
+		} else {
+			*thit = t2;
+		}
 	}
+
 	local->pos = Point( (ray.pos.x + ((*thit) * ray.dir.x)), (ray.pos.y + ((*thit) * ray.dir.y)), (ray.pos.z + ((*thit) * ray.dir.z)) );
 	local->normal = Normal::pointSubtraction(local->pos, this->center);
 	return true;
 }
 
-bool Sphere::intersectP(Ray & ray) {
+bool Sphere::intersectP(Ray & ray, const float thit_min, const float thit_max) {
 	float A = Vector3::dotProduct(ray.dir, ray.dir);
 	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
 	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
@@ -603,12 +616,12 @@ Triangle::Triangle() {
 	// TODO
 }
 
-bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
+bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max) {
 	// TODO
 	return false;
 }
 
-bool Triangle::intersectP(Ray & ray) {
+bool Triangle::intersectP(Ray & ray, const float thit_min, const float thit_max) {
 	// TODO
 	return false;
 }
@@ -625,18 +638,18 @@ Color GeometricPrimitive::getColor() {
 	return this->color;
 }
 
-bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
+bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in, const float thit_min, const float thit_max) {
 	Ray objRay = this->worldToObj * ray;
 	LocalGeo objLocal;
-	if (!this->shape->intersect(objRay, thit, &objLocal)) return false;
+	if (!this->shape->intersect(objRay, thit, &objLocal, thit_min, thit_max)) return false;
 	in->primitive = this;
 	in->localGeo = this->objToWorld * objLocal;
 	return true;
 }
 
-bool GeometricPrimitive::intersectP(Ray & ray) {
+bool GeometricPrimitive::intersectP(Ray & ray, const float thit_min, const float thit_max) {
 	Ray objRay = this->worldToObj * ray;
-	return this->shape->intersectP(objRay);
+	return this->shape->intersectP(objRay, thit_min, thit_max);
 }
 
 void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
@@ -652,28 +665,29 @@ AggregatePrimitive::AggregatePrimitive(vector<GeometricPrimitive*> list) {
 	this->allPrimitives = list;
 }
 
-bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
-	float *new_Hit;
-	Intersection *closestInteresection;
-	new_Hit = new float(99999.0); // how fucking obvious is this??
-	closestInteresection = new Intersection();
+bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in, const float thit_min, const float thit_max) {
+	float *new_Hit = new float(99999.0);
+	bool hitSomething = false;
+	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
-		allPrimitives[i]->intersect(ray, new_Hit, closestInteresection);
-		if((*new_Hit) < (*thit)) {
-			(*thit) = (*new_Hit);
-			(*in) = (*closestInteresection);
+		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection, thit_min, thit_max)) {
+			hitSomething = true;
+			if((*new_Hit) < (*thit)) {
+				(*thit) = (*new_Hit);
+				(*in) = (*closestIntersection);
+			}
 		}
 	}
 	//Assumes that intersectP has been called -- no false returned
-	delete closestInteresection;
+	delete closestIntersection;
 	delete new_Hit;
-	return true;
+	return hitSomething;
 }
 
 //Should be called before intersect to check
-bool AggregatePrimitive::intersectP(Ray & ray) {
+bool AggregatePrimitive::intersectP(Ray & ray, const float thit_min, const float thit_max) {
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
-		if (allPrimitives[i]->intersectP(ray)) {
+		if (allPrimitives[i]->intersectP(ray, thit_min, thit_max)) {
 			return true;
 		}
 	}
