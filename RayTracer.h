@@ -54,7 +54,8 @@ public:
 
 class Film {
 public:
-	Film(int screenWidth, int screenHeight);
+	Film(int screenWidth, int screenHeight, string filename);
+	const char* filename;
 	int screenWidth, screenHeight;
 	vector< vector <Color> > pixelImage;		//pixelImage[width][height]
 	void commit(Sample & sample, Color & color);
@@ -65,6 +66,7 @@ class Scene {
 public:
 	Point camerapos;
 	int screenHeight, screenWidth;
-	Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz);
+	string filename;
+	Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz, string filename);
 	void render();
 };

@@ -72,14 +72,19 @@ void Camera::generateRay(Sample & sample, Ray* ray) {
 
 }
 
-Film::Film(int screenWidth, int screenHeight) {
+Film::Film(int screenWidth, int screenHeight, string filename) {
+	this->filename = filename.c_str();
 	this->screenHeight = screenHeight;
 	this->screenWidth = screenWidth;
 	this->pixelImage = vector <vector <Color> >(screenWidth, vector<Color>(screenHeight, Color()));
 }
 
 void Film::commit(Sample & sample, Color & color) {
-
+	//May need to convert from [0, 1] to [0, 255]
+	pixelImage[sample.x][sample.y] = color;
+	color.r = 0.0;
+	color.g = 0.0;
+	color.b = 0.0;
 }
 
 void Film::writeImage() {
@@ -100,14 +105,15 @@ void Film::writeImage() {
 		}
 	}
 
-	if(FreeImage_Save(FIF_PNG, bitmap, "test.png", 0)) {
-		cout << "saved" << endl;
+	if(FreeImage_Save(FIF_PNG, bitmap, this->filename, 0)) {
+		cout << "saved" <<filename << endl;
 	}
 
 	FreeImage_DeInitialise();
 }
 
-Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz) {
+Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz, string filename) {
+	this->filename = filename;
 	this->screenHeight = screenHeight;
 	this->screenWidth = screenWidth;
 	this->camerapos = Point(camerax, cameray, cameraz);
@@ -120,7 +126,7 @@ void Scene::render() {
 	RayTracer raytracer;
 	Color color;
 	Camera camera(camerapos);
-	Film film(screenWidth, screenHeight);
+	Film film(screenWidth, screenHeight, filename);
 	while(!sampler.getSample(&sample)) {
 		camera.generateRay(sample, &ray);
 		raytracer.trace(ray, 0, &color);
@@ -130,5 +136,13 @@ void Scene::render() {
 }
 
 int main(int argc, char *argv[]) {
+	//filename argument
+	//obj file arg (Camera pos, object poss, lights, etc) -> obj parser
+	//resolution args
 
+	string arg = argv[1];
+	int width = atoi(argv[2]);
+	int height = atoi(argv[3]);
+	Scene scene(width, height, 0.0, 0.0, 0.0, arg);
+	scene.render();
 }
