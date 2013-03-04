@@ -276,7 +276,7 @@ Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
 Matrix Matrix::adjointMatrix(vector <vector <float> > input) {
 	vector< vector <float> > adjMat = Matrix::transposeMatrix(input).mat;
 	vector< vector <float> > result(4, vector<float>(4, 0.0));
-	Matrix::cofactorMatrix(adjMat);
+	result = Matrix::cofactorMatrix(adjMat);
 	return Matrix(result);
 }
 
@@ -297,11 +297,11 @@ vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) 
 	placeholder[2] = colD;
 	result[0][0] = Matrix::threeDeterminant(placeholder);
 	placeholder[0] = colA;
-	result[1][0] = Matrix::threeDeterminant(placeholder);
+	result[1][0] = -Matrix::threeDeterminant(placeholder);
 	placeholder[1] = colB;
 	result[2][0] = Matrix::threeDeterminant(placeholder);
 	placeholder[2] = colC;
-	result[3][0] = Matrix::threeDeterminant(placeholder);
+	result[3][0] = -Matrix::threeDeterminant(placeholder);
 
 	colA[0] = input[0][0];
 	colB[0] = input[1][0];
@@ -310,11 +310,11 @@ vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) 
 	placeholder[0] = colB;
 	placeholder[1] = colC;
 	placeholder[2] = colD;
-	result[0][1] = Matrix::threeDeterminant(placeholder);
+	result[0][1] = -Matrix::threeDeterminant(placeholder);
 	placeholder[0] = colA;
 	result[1][1] = Matrix::threeDeterminant(placeholder);
 	placeholder[1] = colB;
-	result[2][1] = Matrix::threeDeterminant(placeholder);
+	result[2][1] = -Matrix::threeDeterminant(placeholder);
 	placeholder[2] = colC;
 	result[3][1] = Matrix::threeDeterminant(placeholder);
 
@@ -327,11 +327,11 @@ vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) 
 	placeholder[2] = colD;
 	result[0][2] = Matrix::threeDeterminant(placeholder);
 	placeholder[0] = colA;
-	result[1][2] = Matrix::threeDeterminant(placeholder);
+	result[1][2] = -Matrix::threeDeterminant(placeholder);
 	placeholder[1] = colB;
 	result[2][2] = Matrix::threeDeterminant(placeholder);
 	placeholder[2] = colC;
-	result[3][2] = Matrix::threeDeterminant(placeholder);
+	result[3][2] = -Matrix::threeDeterminant(placeholder);
 
 	colA[2] = input[0][2];
 	colB[2] = input[1][2];
@@ -340,11 +340,11 @@ vector< vector <float> > Matrix::cofactorMatrix(vector <vector <float> > input) 
 	placeholder[0] = colB;
 	placeholder[1] = colC;
 	placeholder[2] = colD;
-	result[0][3] = Matrix::threeDeterminant(placeholder);
+	result[0][3] = -Matrix::threeDeterminant(placeholder);
 	placeholder[0] = colA;
 	result[1][3] = Matrix::threeDeterminant(placeholder);
 	placeholder[1] = colB;
-	result[2][3] = Matrix::threeDeterminant(placeholder);
+	result[2][3] = -Matrix::threeDeterminant(placeholder);
 	placeholder[2] = colC;
 	result[3][3] = Matrix::threeDeterminant(placeholder);
 
@@ -363,6 +363,7 @@ Matrix Matrix::transposeMatrix(vector < vector <float> > input) {
 
 Matrix Matrix::computeInverseMatrix(vector < vector <float> > input) {
 	float determinant = Matrix::fourDeterminant(input);
+	cout<<"Determinant: "<<determinant<<endl;
 	if(determinant==0) {
 		cout << "This should not happen, and if this is being printed" 
 		<< " then something is really not working!!!" << endl;
@@ -446,7 +447,18 @@ Matrix Matrix::inverse() {
 	return Matrix::computeInverseMatrix(this->mat);
 }
 
-Matrix matMult(Matrix m1, Matrix m2) {
+void Matrix::printMatrix() {
+	cout.precision(4);
+	for(int i=0; i<4; i++) {
+		cout<<"| ";
+		for(int j=0; j<4; j++) {
+			cout<<fixed<<mat[j][i]<<" ";
+		}
+		cout<<"|"<<endl;
+	}
+}
+
+Matrix Matrix::matMult(Matrix m1, Matrix m2) {
 	vector <vector <float> > a = m1.mat;
 	vector <vector <float> > b = m2.mat;
 	vector <vector <float> > result(4, vector<float>(4, 0.0));
@@ -633,7 +645,7 @@ void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
 
 // AggregatePrimitive
 AggregatePrimitive::AggregatePrimitive() {
-	
+
 }
 
 AggregatePrimitive::AggregatePrimitive(vector<GeometricPrimitive*> list) {

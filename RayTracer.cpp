@@ -2,7 +2,7 @@
 #include "RayTracer.h"
 
 RayTracer::RayTracer() {
-	
+
 }
 
 RayTracer::RayTracer(Scene* scene) {
@@ -94,7 +94,6 @@ Camera::Camera(Point p) {
 }
 
 void Camera::generateRay(Sample & sample, Ray* ray) {
-
 }
 
 Film::Film(int screenWidth, int screenHeight, string filename) {

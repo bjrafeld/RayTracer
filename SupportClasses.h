@@ -124,6 +124,7 @@ public:
 	Matrix transpose();  //4x4
 	Matrix inverse();	 //4x4
 	static Matrix matMult(Matrix m1, Matrix m2);
+	void printMatrix();
     
 
 private:    

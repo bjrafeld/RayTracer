@@ -197,7 +197,7 @@ void NormalTest::assertSubtract() {
 }
 
 int main(int argc, char *argv[]) {
-	cout << "--------RUNNING UNIT TESTS--------"<< endl;
+	/*cout << "--------RUNNING UNIT TESTS--------"<< endl;
 
 	cout << "RUNNING TESTS ON Vector3 CLASS..." << endl;
 	Vector3Test::assertEmptyConstructor();
@@ -223,5 +223,58 @@ int main(int argc, char *argv[]) {
 	NormalTest::assertConstructor();
 	NormalTest::assertAdd();
 	NormalTest::assertSubtract();
-	cout << "TESTS FINISHED ON Normal CLASS.\n"<<endl;
+	cout << "TESTS FINISHED ON Normal CLASS.\n"<<endl;*/
+
+	cout <<"CHECKING MATRIX METHODS.\n"<<endl;
+	Matrix identity;
+	cout<<"Creating Identity Matrix\n"<<endl;
+	identity.mat[0][0] = 1.0f;
+	identity.mat[1][1] = 1.0f;
+	identity.mat[2][2] = 1.0f;
+	identity.mat[3][3] = 1.0f;
+
+	identity.printMatrix();
+
+	cout<<"Multiplying Identity by 3.\n"<<endl;
+	Matrix mul = identity*3.0f;
+	mul.printMatrix();
+
+	cout<<"Creating random Matrix\n"<<endl;
+	Matrix random;
+	random.mat[0][0] = 5.0f;
+	random.mat[0][1] = 4.0f;
+	random.mat[0][2] = 1.0f;
+	random.mat[1][1] = -7.0f;
+	random.mat[1][2] = 5.0f;
+	random.mat[1][3] = 8.0f;
+	random.mat[2][0] = 12.0f;
+	random.mat[2][2] = 3.0f;
+	random.mat[2][3] = -9.0f;
+	random.mat[3][0] = -3.0f;
+	random.mat[3][3] = 1.0f;
+
+	random.printMatrix();
+
+	cout<<"Creating Inverse of Matrix\n"<<endl;
+	Matrix inv = random.inverse();
+	inv.printMatrix();
+
+	cout<<"Multiplying Identity by Random\n"<<endl;
+	Matrix result = Matrix::matMult(identity, random);
+	result.printMatrix();
+	cout<<"Multiplying two Matrices\n"<<endl;
+	identity.mat[2][3] = 4.0;
+	identity.mat[1][3] = 3.0;
+	cout<<"Identity is now: \n"<<endl;
+	identity.printMatrix();
+
+
+	cout<<"\n\n"<<endl;
+	result = Matrix::matMult(identity, random);
+	result.printMatrix();
+
+	cout<<"Switching order of multiplicants\n\n"<<endl;
+
+	result = Matrix::matMult(random, identity);
+	result.printMatrix();
 }
