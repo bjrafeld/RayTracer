@@ -1,12 +1,38 @@
 
-#include "SupportClasses.h"
 #include "RayTracer.h"
 
+RayTracer::RayTracer() {
+	
+}
+
+RayTracer::RayTracer(Scene* scene) {
+	this->scene = scene;
+}
+
 void RayTracer::trace(Ray & ray, int depth, Color* color) {
+
+	float thit = 1000000.0;
+	Intersection in;
+
 	if(depth >1) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
+	if(!scene->aggPrimitives.intersectP(ray)) {
+		color->setColor(0.0, 0.0, 0.0);
+		return;
+	} else {
+		scene->aggPrimitives.intersect(ray, &thit, &in);
+	}
+
+	BRDF brdf;
+	in.primitive->getBRDF(in.localGeo, &brdf);
+	*color = in.primitive->getColor();
+	for(int i=0; i<scene->allSceneLights.size(); i++) {
+		//scene->allSceneLights[i].generateLightRay(in.local, )
+		//TODO: FINISH THIS SHIT LATER
+	}
+
 }
 
 Sampler::Sampler(int screenWidth, int screenHeight) {
@@ -116,13 +142,13 @@ Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, fl
 	this->screenHeight = screenHeight;
 	this->screenWidth = screenWidth;
 	this->camerapos = Point(camerax, cameray, cameraz);
+	this->raytracer = RayTracer(this);
 }
 
 void Scene::render() {
 	Sampler sampler(screenWidth, screenHeight);
 	Sample sample;
 	Ray ray;
-	RayTracer raytracer;
 	Color color;
 	Camera camera(camerapos);
 	Film film(screenWidth, screenHeight, filename);
@@ -138,10 +164,20 @@ int main(int argc, char *argv[]) {
 	//filename argument
 	//obj file arg (Camera pos, object poss, lights, etc) -> obj parser
 	//resolution args
-
 	string arg = argv[1];
 	int width = atoi(argv[2]);
 	int height = atoi(argv[3]);
-	Scene scene(width, height, 0.0, 0.0, 0.0, arg);
+	Scene scene(width, height, 0.0, 0.0, 2.0, arg);
+
+	//Temporary Scene Construction
+	GeometricPrimitive sphere;
+	sphere.shape = new Sphere(Point(0.0, 0.0, 0.0), 0.5);
+	sphere.mat = new Material(BRDF());
+	sphere.color = Color(1.0, 0.5, 1.0);
+
+	vector<GeometricPrimitive*> list;
+	list.push_back(&sphere);
+	scene.aggPrimitives = AggregatePrimitive(list);
+
 	scene.render();
 }

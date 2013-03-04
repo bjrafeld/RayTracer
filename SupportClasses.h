@@ -21,6 +21,7 @@ class Intersection;
 class Primitive;
 class Material;
 class GeometricPrimitive;
+class AggregatePrimitive;
 
 //Vector3 Class
 class Vector3 {
@@ -161,7 +162,7 @@ public:
 };
 
 // Sphere Class
-class Sphere : Shape{
+class Sphere : public Shape{
 public:
     Point center;
     float radius;
@@ -200,6 +201,9 @@ public:
     virtual bool intersect(Ray & ray, float* thit, Intersection* in) = 0;
     virtual bool intersectP(Ray & ray) = 0;
     virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
+
+    //TODO FUCK THIS
+    virtual Color getColor() = 0;
 };
 
 // GeometricPrimitive
@@ -208,6 +212,13 @@ public:
     Transformation objToWorld, worldToObj;
     Shape* shape;
     Material* mat;
+
+
+    //TEMPORARY
+    Color color;
+    virtual Color getColor();
+
+
     GeometricPrimitive();
     virtual bool intersect(Ray & ray, float* thit, Intersection* in);
     virtual bool intersectP(Ray & ray);
@@ -215,7 +226,14 @@ public:
 };
 
 // AggregatePrimitive
-// TODO
+class AggregatePrimitive {
+public:
+	vector<GeometricPrimitive*> allPrimitives;
+	AggregatePrimitive();
+	AggregatePrimitive(vector<GeometricPrimitive*> list);
+	bool intersect(Ray & ray, float *thit, Intersection* in);
+	bool intersectP(Ray & r);
+};
 
 // Material
 // Stores a constant material used for shading calculations

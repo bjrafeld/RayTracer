@@ -1,4 +1,5 @@
 #include "FreeImage.h"
+#include "SupportClasses.h"
 
 class RayTracer;
 class Sampler;
@@ -11,6 +12,9 @@ class Camera;
 
 class RayTracer {
 public:
+	Scene* scene;
+	RayTracer();
+	RayTracer(Scene* scene);
 	void trace(Ray & ray, int depth, Color* color);
 };
 
@@ -64,6 +68,11 @@ public:
 
 class Scene {
 public:
+	RayTracer raytracer;
+	//TODO get prims in the list
+	AggregatePrimitive aggPrimitives;
+	//TODO get lights in the list
+	vector<Light*> allSceneLights;
 	Point camerapos;
 	int screenHeight, screenWidth;
 	string filename;
