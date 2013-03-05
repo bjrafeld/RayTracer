@@ -671,10 +671,6 @@ Intersection::Intersection() {
 GeometricPrimitive::GeometricPrimitive() {
 }
 
-Color GeometricPrimitive::getColor() {
-	return this->color;
-}
-
 bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 	Ray objRay = this->worldToObj * ray;
 	LocalGeo objLocal;

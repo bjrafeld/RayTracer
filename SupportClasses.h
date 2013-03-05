@@ -208,9 +208,6 @@ public:
     virtual bool intersect(Ray & ray, float* thit, Intersection* in) = 0;
     virtual bool intersectP(Ray & ray) = 0;
     virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
-
-    //TODO FUCK THIS
-    virtual Color getColor() = 0;
 };
 
 // GeometricPrimitive
@@ -219,12 +216,6 @@ public:
     Transformation objToWorld, worldToObj;
     Shape* shape;
     Material* mat;
-
-
-    //TEMPORARY
-    Color color;
-    virtual Color getColor();
-
 
     GeometricPrimitive();
     virtual bool intersect(Ray & ray, float* thit, Intersection* in);
