@@ -488,14 +488,13 @@ Transformation::Transformation(Matrix m) {
 }
 
 vector<float> Matrix::multVector(Matrix m, vector<float> vect) {
-	vector< vector <float> > transform = m.mat;
 	vector<float> resultHolder(4, 0.0);
 	for (int i=0; i<4; i++) {
-		float a = transform[i][0]*vect[0];
-		float b = transform[i][1]*vect[1];
-		float c = transform[i][2]*vect[2];
-		float d = transform[i][3]*vect[3];
-		resultHolder[i] = a+b+c+d;
+		float a = m.mat[0][i]*vect[0];
+		float b = m.mat[1][i]*vect[1];
+		float c = m.mat[2][i]*vect[2];
+		float d = m.mat[3][i]*vect[3];
+		resultHolder[i] = (a+b+c+d);
 	}
 	vector<float> result(3, 0.0);
 	result[0] = resultHolder[0]/resultHolder[3];

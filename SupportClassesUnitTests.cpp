@@ -251,30 +251,20 @@ int main(int argc, char *argv[]) {
 	random.mat[2][2] = 3.0f;
 	random.mat[2][3] = -9.0f;
 	random.mat[3][0] = -3.0f;
-	random.mat[3][3] = 1.0f;
+	random.mat[3][3] = 0.0f;
 
 	random.printMatrix();
 
-	cout<<"Creating Inverse of Matrix\n"<<endl;
-	Matrix inv = random.inverse();
-	inv.printMatrix();
+	//cout<<"Creating Inverse of Matrix\n"<<endl;
+	//Matrix inv = random.inverse();
+	//inv.printMatrix();
 
-	cout<<"Multiplying Identity by Random\n"<<endl;
-	Matrix result = Matrix::matMult(identity, random);
-	result.printMatrix();
-	cout<<"Multiplying two Matrices\n"<<endl;
-	identity.mat[2][3] = 4.0;
-	identity.mat[1][3] = 3.0;
-	cout<<"Identity is now: \n"<<endl;
-	identity.printMatrix();
+	Transformation t(random);
+	//t.minvt.printMatrix();
+
+	Point x(1.0, 1.0, 1.0);
+	x = t*x;
+	cout<<"X: "<<x.x<<" Y: "<<x.y<<" Z: "<<x.z<<endl;
 
 
-	cout<<"\n\n"<<endl;
-	result = Matrix::matMult(identity, random);
-	result.printMatrix();
-
-	cout<<"Switching order of multiplicants\n\n"<<endl;
-
-	result = Matrix::matMult(random, identity);
-	result.printMatrix();
 }

@@ -26,7 +26,7 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
-	if(!scene->aggPrimitives.intersect(ray, &thit, &in, 1.0, 999999.0)) {
+	if(!scene->aggPrimitives.intersect(ray, &thit, &in, 0.0, 999999.0)) {
 		color->setColor(0.0, 0.0, 0.0);
 		//cout<<"Not intersecting anything\n"<<endl;
 		return;
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
 
 	//Temporary Scene Construction
 	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, 0.0), 0.5);
+	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 0.5);
 	sphere.mat = new Material(BRDF());
 	sphere.color = Color(1.0, 0.0, 0.0);
 	
