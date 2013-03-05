@@ -3,7 +3,9 @@
 
 - Flipped pixel indices (orientation could be upside-down)
 - Check for color flips (FreeImage uses mod255)
-- 
+- issues with t_min in light rays 
+- Need to account for camera direction (Specular shading)
+- When computing specular component in Shader viewer vector could possibly be wrong (now constant at camera.pos-origin)
 */
 
 #include "RayTracer.h"
@@ -15,6 +17,7 @@ RayTracer::RayTracer() {
 
 RayTracer::RayTracer(Scene* scene) {
 	this->scene = scene;
+	this->shader = new Shader();
 }
 
 void RayTracer::trace(Ray & ray, int depth, Color* color) {
@@ -32,14 +35,28 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		return;
 	} 
 
-	*color = in.primitive->getColor();
-
+	//*color = in.primitive->getColor();
 	BRDF brdf;
 	in.primitive->getBRDF(in.localGeo, &brdf);
+
+	Color totalColor;
 	for(unsigned int i=0; i<scene->allSceneLights.size(); i++) {
-		//scene->allSceneLights[i].generateLightRay(in.local, )
-		//TODO: FINISH THIS SHIT LATER
+		
+		Ray lray;
+		lray.t_min = thit + 0.0001;	// ordering here is important
+		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
+		Color lcolor;
+		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
+
+		// TODO - check if light is blocked or not before calling shading method
+		totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos);
 	}
+
+	totalColor.r = min(totalColor.r, 1.0f);
+	totalColor.g = min(totalColor.g, 1.0f);
+	totalColor.b = min(totalColor.b, 1.0f);
+
+	color->setColor(totalColor.r, totalColor.g, totalColor.b);
 
 }
 
@@ -76,6 +93,10 @@ PointLight::PointLight(Point location, Color color) {
 void PointLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 	lray->pos = local.pos;
 	lray->dir = Vector3::pointSubtraction(this->location, local.pos);
+	color->r = this->color.r;
+	color->g = this->color.g;
+	color->b = this->color.b;
+	lray->t_max = lray->t_min + lray->dir.magnitude();
 }
 
 DirectionalLight::DirectionalLight() {
@@ -89,6 +110,9 @@ DirectionalLight::DirectionalLight(Vector3 direction, Color color) {
 void DirectionalLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 	lray->pos = local.pos;
 	lray->dir = this->direction * -1.0;
+	color->r = this->color.r;
+	color->g = this->color.g;
+	color->b = this->color.b;
 }
 
 Camera::Camera() {
@@ -120,6 +144,8 @@ Camera::Camera(Point p, int screenWidth, int screenHeight) {
 }
 
 void Camera::generateRay(Sample & sample, Ray* ray) {
+
+	// needs to be changed for non-origin camera positions woof woof
 	float u = l + ( ((r-l)*(sample.x + 0.5)) / screenWidth);
 	float v = b + ( ((t - b)*(sample.y + 0.5)) / screenHeight);
 	float w = -1;
@@ -210,10 +236,11 @@ int main(int argc, char *argv[]) {
 
 	//Temporary Scene Construction
 	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 0.5);
-	sphere.mat = new Material(BRDF());
+	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 1.0);
+	sphere.mat = new Material(BRDF(Color(0.0, 0.0, 0.0), Color(1.0, 0.0, 1.0), Color(0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0), 20.0));
 	sphere.color = Color(1.0, 0.0, 0.0);
 	
+
 	vector<float> column0(4);
 	column0[0] = 1.0;
 	column0[1] = column0[2] = column0[3] = 0.0;
@@ -232,6 +259,10 @@ int main(int argc, char *argv[]) {
 	identity[2] = column2;
 	identity[3] = column3;
 
+	PointLight thomasJefferson = PointLight(Point(1.0, 1.0, -1.0), Color(1.0, 1.0, 1.0));
+	DirectionalLight georgeWashington = DirectionalLight(Vector3(1.0, 0.0, -1.0), Color(0.5, 0.5, 0.5));
+	scene.allSceneLights.push_back(&georgeWashington);
+	scene.allSceneLights.push_back(&thomasJefferson);
 
 	Matrix m(identity);
 	sphere.objToWorld = Transformation(m);
