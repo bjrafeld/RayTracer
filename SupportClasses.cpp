@@ -550,12 +550,12 @@ LocalGeo Transformation::operator*(LocalGeo l) {
 Shape::Shape() {
 }
 
-bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max) {
+bool Shape::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	// Override me!
 	return false;
 }
 
-bool Shape::intersectP(Ray & ray, const float thit_min, const float thit_max) {
+bool Shape::intersectP(Ray & ray) {
 	// Override me!
 	return false;
 }
@@ -568,7 +568,7 @@ Sphere::Sphere(Point c, float r) {
 	this->radius = r;
 }
 
-bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max) {
+bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	float A = Vector3::dotProduct(ray.dir, ray.dir);
 	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
 	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
@@ -580,8 +580,8 @@ bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit
 	float t1 = (-B + sqrt((B*B) - (4 * A * C))) / (2 * A);
 	float t2 = (-B - sqrt((B*B) - (4 * A * C))) / (2 * A);
 
-	bool t1_out = ((t1 <= thit_min) || (t1 >=thit_max));
-	bool t2_out = ((t2 <= thit_min) || (t2 >=thit_max));
+	bool t1_out = ((t1 < ray.t_min) || (t1 > ray.t_max));
+	bool t2_out = ((t2 < ray.t_min) || (t2 > ray.t_max));
 	//Checks to see that both t1 and t2 are out of bounds
 	if(t1_out && t2_out) {
 		return false;
@@ -603,7 +603,7 @@ bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit
 	return true;
 }
 
-bool Sphere::intersectP(Ray & ray, const float thit_min, const float thit_max) {
+bool Sphere::intersectP(Ray & ray) {
 	float A = Vector3::dotProduct(ray.dir, ray.dir);
 	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
 	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
@@ -615,12 +615,12 @@ Triangle::Triangle() {
 	// TODO
 }
 
-bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max) {
+bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	// TODO
 	return false;
 }
 
-bool Triangle::intersectP(Ray & ray, const float thit_min, const float thit_max) {
+bool Triangle::intersectP(Ray & ray) {
 	// TODO
 	return false;
 }
@@ -637,18 +637,18 @@ Color GeometricPrimitive::getColor() {
 	return this->color;
 }
 
-bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in, const float thit_min, const float thit_max) {
+bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 	Ray objRay = this->worldToObj * ray;
 	LocalGeo objLocal;
-	if (!this->shape->intersect(objRay, thit, &objLocal, thit_min, thit_max)) return false;
+	if (!this->shape->intersect(objRay, thit, &objLocal)) return false;
 	in->primitive = this;
 	in->localGeo = this->objToWorld * objLocal;
 	return true;
 }
 
-bool GeometricPrimitive::intersectP(Ray & ray, const float thit_min, const float thit_max) {
+bool GeometricPrimitive::intersectP(Ray & ray) {
 	Ray objRay = this->worldToObj * ray;
-	return this->shape->intersectP(objRay, thit_min, thit_max);
+	return this->shape->intersectP(objRay);
 }
 
 void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
@@ -664,12 +664,12 @@ AggregatePrimitive::AggregatePrimitive(vector<GeometricPrimitive*> list) {
 	this->allPrimitives = list;
 }
 
-bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in, const float thit_min, const float thit_max) {
+bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 	float *new_Hit = new float(99999.0);
 	bool hitSomething = false;
 	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
-		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection, thit_min, thit_max)) {
+		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
 			hitSomething = true;
 			if((*new_Hit) < (*thit)) {
 				(*thit) = (*new_Hit);
@@ -684,9 +684,9 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in, con
 }
 
 //Should be called before intersect to check
-bool AggregatePrimitive::intersectP(Ray & ray, const float thit_min, const float thit_max) {
+bool AggregatePrimitive::intersectP(Ray & ray) {
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
-		if (allPrimitives[i]->intersectP(ray, thit_min, thit_max)) {
+		if (allPrimitives[i]->intersectP(ray)) {
 			return true;
 		}
 	}
