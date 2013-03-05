@@ -1,25 +1,25 @@
 #include "Parser.h"
 
 
-void loadScene(std::string file) {
+void loadScene(string file) {
 
   //store variables and set stuff at the end
   int width, height;
-  std::string fname = "output.bmp";
+  string fname = "output.bmp";
 
-  std::ifstream inpfile(file.c_str());
+  ifstream inpfile(file.c_str());
   if(!inpfile.is_open()) {
-    std::cout << "Unable to open file" << std::endl;
+    cout << "Unable to open file" << endl;
   } else {
-    std::string line;
+    string line;
     //MatrixStack mst;
 
     while(inpfile.good()) {
-      std::vector<std::string> splitline;
-      std::string buf;
+      vector<string> splitline;
+      string buf;
 
-      std::getline(inpfile,line);
-      std::stringstream ss(line);
+      getline(inpfile,line);
+      stringstream ss(line);
 
       while (ss >> buf) {
         splitline.push_back(buf);
@@ -259,7 +259,7 @@ void loadScene(std::string file) {
         // b: atof(splitline[3].c_str())
         // Update current properties
       } else {
-        std::cerr << "Unknown command: " << splitline[0] << std::endl;
+        cerr << "Unknown command: " << splitline[0] << endl;
       }
     }
 
