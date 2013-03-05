@@ -33,7 +33,9 @@ public:
     Vector3 operator-(Vector3 v);
     Vector3 operator*(float scalar);
     Vector3 operator/(float scalar);
+    Vector3 power(float constant);
     Vector3 normalize();
+    float magnitude();
     static Vector3 pointSubtraction(Point target_point, Point initial_point);
     static float dotProduct(const Vector3 v1, const Vector3 v2);
 };
@@ -57,6 +59,7 @@ public:
 	Normal(float x, float y, float z);
 	Normal operator+(Normal n);
 	Normal operator-(Normal n);
+    Vector3 normalToVector();
 	static Normal pointSubtraction(Point target_point, Point initial_point);
 private:
 	Normal normalize();
@@ -79,6 +82,8 @@ public:
 	void setColor(float r, float g, float b);
 	Color operator+(Color c);
 	Color operator-(Color c);
+    Color operator*(Color c);
+    Color operator*(float scalar);
 };
 
 class Sample {
@@ -99,8 +104,9 @@ public:
 class BRDF {
 public:
 	Color ka, kd, ks, kr;
+    float alphaConstant;
 	BRDF();
-	BRDF(Color ka, Color kd, Color ks, Color kr);
+	BRDF(Color ka, Color kd, Color ks, Color kr, float alphaConstant);
 };
 
 

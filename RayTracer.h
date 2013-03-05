@@ -1,5 +1,6 @@
+
 #include "FreeImage.h"
-#include "SupportClasses.h"
+#include "Shading.h"
 
 class RayTracer;
 class Sampler;
@@ -13,6 +14,7 @@ class Camera;
 class RayTracer {
 public:
 	Scene* scene;
+	Shader* shader;
 	RayTracer();
 	RayTracer(Scene* scene);
 	void trace(Ray & ray, int depth, Color* color);
@@ -30,7 +32,7 @@ public:
 	virtual void generateLightRay(LocalGeo& local, Ray* lray, Color* color) = 0;
 };
 
-class PointLight : Light {
+class PointLight : public Light {
 public:
 	Point location;
 	Color color;
@@ -39,7 +41,7 @@ public:
 	virtual void generateLightRay(LocalGeo& local, Ray* lray, Color* color);
 };
 
-class DirectionalLight : Light {
+class DirectionalLight : public Light {
 public:
 	Vector3 direction;
 	Color color;

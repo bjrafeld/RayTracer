@@ -55,6 +55,10 @@ Vector3 Vector3::normalize() {
 	return result;
 }
 
+float Vector3::magnitude() {
+	return sqrt(sqr(this->x)+sqr(this->y)+sqr(this->z));
+}
+
 float Vector3::dotProduct(const Vector3 v1, const Vector3 v2) {
 	return ((v1.x*v2.x) + (v1.y*v2.y) + (v1.z*v2.z));
 }
@@ -92,6 +96,14 @@ Vector3 Vector3::pointSubtraction(Point target_point, Point initial_point) {
 	temp = target_point-initial_point;
 	Vector3 result(temp.x, temp.y, temp.z);
 	return result;
+}
+
+Vector3 Vector3::power(float constant) {
+	Vector3 output;
+	output.x = pow(this->x, constant);
+	output.y = pow(this->y, constant);
+	output.z = pow(this->z, constant);
+	return output;
 }
 
 Normal::Normal() {
@@ -154,6 +166,14 @@ Normal Normal::operator-(Normal n) {
 	return result;
 }
 
+Vector3 Normal::normalToVector() {
+	Vector3 output;
+	output.x = x;
+	output.y = y;
+	output.z = z;
+	return output;
+}
+
 Ray::Ray() {
 	pos = Point();
 	dir = Vector3();
@@ -196,6 +216,22 @@ Color Color::operator-(Color c) {
 	return result;
 }
 
+Color Color::operator*(Color c) {
+	Color result;
+	result.r = r * c.r;
+	result.g = g * c.g;
+	result.b = b * c.b;
+	return result;	
+}
+
+Color Color::operator*(float scalar) {
+	Color output;
+	output.r = this->r * scalar;
+	output.g = this->g * scalar;
+	output.b = this->b * scalar;
+	return output;
+}
+
 void Color::setColor(float r, float g, float b) {
 	this->r = r;
 	this->g = g;
@@ -227,13 +263,15 @@ BRDF::BRDF() {
 	this->kd = Color();
 	this->ks = Color();
 	this->kr = Color();
+	this->alphaConstant = 0.0;
 }
 
-BRDF::BRDF(Color ka, Color kd, Color ks, Color kr) {
+BRDF::BRDF(Color ka, Color kd, Color ks, Color kr, float alphaConstant) {
 	this->ka = ka;
 	this->kd = kd;
 	this->ks = ks;
 	this->kr = kr;
+	this->alphaConstant = alphaConstant;
 }
 
 Matrix::Matrix(vector <vector <float> > input) {
@@ -705,4 +743,5 @@ void Material::getBRDF(LocalGeo& local, BRDF* brdf) {
 	brdf->kd = this->constantBRDF.kd;
 	brdf->ks = this->constantBRDF.ks;
 	brdf->kr = this->constantBRDF.kr;
+	brdf->alphaConstant = this->constantBRDF.alphaConstant;
 }
