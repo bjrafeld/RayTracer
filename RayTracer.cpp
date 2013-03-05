@@ -26,15 +26,16 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
-	if(!scene->aggPrimitives.intersect(ray, &thit, &in, 1.0, 999999.0)) {
+	if(!scene->aggPrimitives.intersect(ray, &thit, &in)) {
 		color->setColor(0.0, 0.0, 0.0);
 		//cout<<"Not intersecting anything\n"<<endl;
 		return;
 	} 
 
+	*color = in.primitive->getColor();
+
 	BRDF brdf;
 	in.primitive->getBRDF(in.localGeo, &brdf);
-	*color = in.primitive->getColor();
 	for(unsigned int i=0; i<scene->allSceneLights.size(); i++) {
 		//scene->allSceneLights[i].generateLightRay(in.local, )
 		//TODO: FINISH THIS SHIT LATER
@@ -124,6 +125,8 @@ void Camera::generateRay(Sample & sample, Ray* ray) {
 	float w = -1;
 	ray->dir = Vector3(u, v, w);
 	ray->pos = this->pos;
+	ray->t_min = 1.0;
+	ray->t_max = 999999.0;
 	//Vector3 P = (((LL*v)+(UL*(1.0-v))) * u) + (((LR*v)+(UR*(1.0-v))) * (1.0-u));
 	//ray->dir = P;
 }
@@ -207,7 +210,7 @@ int main(int argc, char *argv[]) {
 
 	//Temporary Scene Construction
 	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, 0.0), 0.5);
+	sphere.shape = new Sphere(Point(0.0, 0.0, -2.0), 0.5);
 	sphere.mat = new Material(BRDF());
 	sphere.color = Color(1.0, 0.0, 0.0);
 	

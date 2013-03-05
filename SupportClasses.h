@@ -157,9 +157,9 @@ class Shape {
 public:
     Shape();
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
-    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max);
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
-    virtual bool intersectP(Ray & ray, const float thit_min, const float thit_max);
+    virtual bool intersectP(Ray & ray);
 };
 
 // Sphere Class
@@ -171,9 +171,9 @@ public:
     Sphere();
     Sphere(Point c, float r);
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
-    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max);
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
-    virtual bool intersectP(Ray & ray, const float thit_min, const float thit_max);
+    virtual bool intersectP(Ray & ray);
 };
 
 // Triangle Class
@@ -183,9 +183,9 @@ public:
     Triangle();
 
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
-    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local, const float thit_min, const float thit_max);
+    virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
-    virtual bool intersectP(Ray & ray, const float thit_min, const float thit_max);
+    virtual bool intersectP(Ray & ray);
 };
 
 // Intersection
@@ -199,8 +199,8 @@ public:
 // Primitive
 class Primitive {
 public:
-    virtual bool intersect(Ray & ray, float* thit, Intersection* in, const float thit_min, const float thit_max) = 0;
-    virtual bool intersectP(Ray & ray, const float thit_min, const float thit_max) = 0;
+    virtual bool intersect(Ray & ray, float* thit, Intersection* in) = 0;
+    virtual bool intersectP(Ray & ray) = 0;
     virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
 
     //TODO FUCK THIS
@@ -221,8 +221,8 @@ public:
 
 
     GeometricPrimitive();
-    virtual bool intersect(Ray & ray, float* thit, Intersection* in, const float thit_min, const float thit_max);
-    virtual bool intersectP(Ray & ray, const float thit_min, const float thit_max);
+    virtual bool intersect(Ray & ray, float* thit, Intersection* in);
+    virtual bool intersectP(Ray & ray);
     virtual void getBRDF(LocalGeo& local, BRDF* brdf);
 };
 
@@ -232,8 +232,8 @@ public:
 	vector<GeometricPrimitive*> allPrimitives;
 	AggregatePrimitive();
 	AggregatePrimitive(vector<GeometricPrimitive*> list);
-	bool intersect(Ray & ray, float *thit, Intersection* in, const float thit_min, const float thit_max);
-	bool intersectP(Ray & r, const float thit_min, const float thit_max);
+	bool intersect(Ray & ray, float *thit, Intersection* in);
+	bool intersectP(Ray & r);
 };
 
 // Material
