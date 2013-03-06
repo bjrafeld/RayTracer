@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
 	Scene scene;
 	scene.aggPrimitives = AggregatePrimitive(list);
 	loadScene(fileName, &scene);
+	scene.allSceneLights[0]->printSelf();
 	scene.render();
 	
 }

@@ -36,6 +36,7 @@ public:
 class Light {
 public:
 	virtual void generateLightRay(LocalGeo& local, Ray* lray, Color* color) = 0;
+	virtual void printSelf() = 0;
 };
 
 class PointLight : public Light {
@@ -45,6 +46,7 @@ public:
 	PointLight();
 	PointLight(Point location, Color color);
 	virtual void generateLightRay(LocalGeo& local, Ray* lray, Color* color);
+	virtual void printSelf();
 };
 
 class DirectionalLight : public Light {
@@ -54,6 +56,7 @@ public:
 	DirectionalLight();
 	DirectionalLight(Vector3 direction, Color color);
 	virtual void generateLightRay(LocalGeo& local, Ray* lray, Color* color);
+	virtual void printSelf();
 };
 
 class Camera {

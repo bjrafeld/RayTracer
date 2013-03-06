@@ -686,6 +686,11 @@ bool Sphere::intersectP(Ray & ray) {
 	return (determinant >= 0);
 }
 
+void Sphere::printSelf() {
+	cout << "Shape center is: " << this->center.x <<" "<<this->center.y<<" "<<this->center.z<<endl;
+	cout << "Shape radius is: " << this->radius <<endl;
+}
+
 Triangle::Triangle() {
 	// TODO
 }
@@ -706,6 +711,18 @@ Intersection::Intersection() {
 
 // Geometric Primitive
 GeometricPrimitive::GeometricPrimitive() {
+}
+
+GeometricPrimitive::GeometricPrimitive(Shape* shape, Material* material, Transformation obj, Transformation world) {
+	this->objToWorld = obj;
+	this->worldToObj = world;
+	this->mat = material;
+	this->shape = shape;
+}
+
+void GeometricPrimitive::printSelf() {
+	cout<<"Material.ka is: "<<mat->constantBRDF.ka.r<<" "<<mat->constantBRDF.ka.g<<" "<<mat->constantBRDF.ka.b<<endl;
+	shape->printSelf();
 }
 
 bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {

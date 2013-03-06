@@ -90,6 +90,11 @@ PointLight::PointLight(Point location, Color color) {
 	this->color = color;
 }
 
+void PointLight::printSelf() {
+	cout<<"Plight location: "<<location.x<<" "<<location.y<<" "<<location.z<<endl;
+	cout<<"Plight Color: "<<color.r<<" "<<color.g<<" "<<color.g<<endl;
+}
+
 void PointLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 	lray->pos = local.pos;
 	lray->dir = Vector3::pointSubtraction(this->location, local.pos);
@@ -100,6 +105,11 @@ void PointLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 }
 
 DirectionalLight::DirectionalLight() {
+}
+
+void DirectionalLight::printSelf() {
+	cout<<"Dlight direction: "<<direction.x<<" "<<direction.y<<" "<<direction.z<<endl;
+	cout<<"Dlight Color: "<<color.r<<" "<<color.g<<" "<<color.g<<endl;
 }
 
 DirectionalLight::DirectionalLight(Vector3 direction, Color color) {
