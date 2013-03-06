@@ -31,13 +31,11 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
-	cout<<"Going into aggPrimitives intersection"<<endl;
 	if(!scene->aggPrimitives.intersect(ray, &thit, &in)) {
 		color->setColor(0.0, 0.0, 0.0);
 		//cout<<"Not intersecting anything\n"<<endl;
 		return;
 	} 
-	cout<<"Made it out of prim intersect"<<endl;
 
 	BRDF brdf;
 	in.primitive->getBRDF(in.localGeo, &brdf);
@@ -49,9 +47,7 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		lray.t_min = thit + 0.0001;	// ordering here is important
 		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		Color lcolor;
-		cout<<"Made it into light part"<<endl;
 		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
-		cout<<"Made it out of light generateLight ray"<<endl;
 		// TODO - check if light is blocked or not before calling shading method
 		totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
 	}
@@ -221,6 +217,7 @@ void Film::writeImage() {
 }
 
 Scene::Scene() {
+	this->raytracer = RayTracer(this);
 }
 
 Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz, string filename) {

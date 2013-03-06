@@ -86,7 +86,7 @@ void loadScene(string file, Scene* scene) {
       //sphere x y z radius
       //  Deï¬nes a sphere with a given position and radius.
       else if(!splitline[0].compare("sphere")) {
-        /*float x = atof(splitline[1].c_str());
+         float x = atof(splitline[1].c_str());
         float y = atof(splitline[2].c_str());
         float z = atof(splitline[3].c_str());
         Point p(x, y, z);
@@ -94,10 +94,11 @@ void loadScene(string file, Scene* scene) {
         float r = atof(splitline[4].c_str());
         Sphere s(p, r);
         (*currentPrimitive->shape) = s;
-       (*currentPrimitive->mat) = currentMaterial;
+        (*currentPrimitive->mat) = currentMaterial;
         currentPrimitive->objToWorld = currentTransform;
         Transformation invt(currentTransform.minvt);
-        currentPrimitive->worldToObj = invt;*/
+        currentPrimitive->worldToObj = invt;
+        //scene->aggPrimitives.allPrimitives.push_back(&currentPrimitive);
 
         //HOW TO ADD TO POINTERS
 

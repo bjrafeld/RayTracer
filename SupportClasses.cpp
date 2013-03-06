@@ -739,8 +739,6 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 	float *new_Hit = new float(99999.0);
 	bool hitSomething = false;
 	Intersection *closestIntersection = new Intersection();
-	cout<<"Going into for loop of intersect"<<endl;
-	cout<<"Size of prims is: "<<allPrimitives.size()<<endl;
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
 		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
 			hitSomething = true;
