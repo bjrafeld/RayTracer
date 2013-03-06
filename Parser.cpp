@@ -1,5 +1,6 @@
 #include "Parser.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 
 void loadScene(string file, Scene* scene) {
 
