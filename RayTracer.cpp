@@ -232,12 +232,6 @@ int main(int argc, char *argv[]) {
 	int width = atoi(argv[2]);
 	int height = atoi(argv[3]);
 	Scene scene(width, height, 0.0, 0.0, 0.0, arg);
-
-	//Temporary Scene Construction
-	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, 0.0), 1.0);
-	sphere.mat = new Material(BRDF(Color(0.0, 0.0, 0.0), Color(1.0, 0.0, 1.0), Color(0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0), 20.0));
-	sphere.color = Color(1.0, 0.0, 0.0);
 	
 	// Identity matrix
 	vector<float> column0(4);
