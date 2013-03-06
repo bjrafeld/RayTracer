@@ -48,9 +48,8 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		Color lcolor;
 		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
-
 		// TODO - check if light is blocked or not before calling shading method
-		totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos);
+		totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
 	}
 
 	totalColor.r = min(totalColor.r, 1.0f);
@@ -121,15 +120,25 @@ Camera::Camera() {
 
 Camera::Camera(Point cameraPos, Point lookAt, Vector3 up, float fov, int screenWidth, int screenHeight) {
 	this->pos = cameraPos;
-	this->upVector = up;
 	this->lookAt = lookAt;
 	float result = 2 * (tan((fov/2)*PI/180));
 	this->aspectRatio = screenWidth/screenHeight;
-	float imageHeight = result/aspectRatio;
-	float imageWidth = imageHeight * aspectRatio;
+	this->imageHeight = result/aspectRatio;
+	this->imageWidth = imageHeight * aspectRatio;
+
+	//Calculate Orthonormal Basis
+	this->w_basis = ((Vector3::pointSubtraction(lookAt, cameraPos))*-1).normalize();
+	this->u_basis = (Vector3::crossProduct(up, w_basis)).normalize();
+	this->v_basis = (Vector3::crossProduct(w_basis, u_basis)).normalize();
+
+	this->t = imageHeight/2;
+	this->b = -(imageHeight/2);
+	this->l = -(imageWidth/2);
+	this->r = imageWidth/2;
 
 }
 
+//Only for testing
 Camera::Camera(float x, float y, float z, int screenWidth, int screenHeight) {
 	Point p(x, y, z);
 	this->pos = p;
@@ -137,10 +146,6 @@ Camera::Camera(float x, float y, float z, int screenWidth, int screenHeight) {
 	this->screenHeight = screenHeight;
 	this->l = this->b = -1.0;
 	this->r = this->t = 1.0;
-	this->UL = Vector3(-1.0, 1.0, -1.0);
-	this->UR = Vector3(1.0, 1.0, -1.0);
-	this->LL = Vector3(-1.0, -1.0, -1.0);
-	this->LR = Vector3(1.0, -1.0, -1.0);
 }
 
 Camera::Camera(Point p, int screenWidth, int screenHeight) {
@@ -149,10 +154,6 @@ Camera::Camera(Point p, int screenWidth, int screenHeight) {
 	this->screenHeight = screenHeight;
 	this->l = this->b = -1.0;
 	this->r = this->t = 1.0;
-	this->UL = Vector3(-1.0, 1.0, -1.0);
-	this->UR = Vector3(1.0, 1.0, -1.0);
-	this->LL = Vector3(-1.0, -1.0, -1.0);
-	this->LR = Vector3(1.0, -1.0, -1.0);
 }
 
 void Camera::generateRay(Sample & sample, Ray* ray) {
@@ -161,7 +162,9 @@ void Camera::generateRay(Sample & sample, Ray* ray) {
 	float u = l + ( ((r-l)*(sample.x + 0.5)) / screenWidth);
 	float v = b + ( ((t - b)*(sample.y + 0.5)) / screenHeight);
 	float w = -1;
-	ray->dir = Vector3(u, v, w);
+
+	Vector3 temporaryDirection = (w_basis*w) + (u_basis*u) + (v_basis*v);
+	ray->dir = temporaryDirection;
 	ray->pos = this->pos;
 	ray->t_min = 1.0;
 	ray->t_max = 999999.0;
@@ -214,6 +217,7 @@ void Film::writeImage() {
 }
 
 Scene::Scene() {
+	this->raytracer = RayTracer(this);
 }
 
 Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz, string filename) {
@@ -233,7 +237,6 @@ void Scene::render() {
 	Film film(screenWidth, screenHeight, filename);
 	while(sampler.getSample(&sample)) {
 		camera.generateRay(sample, &ray);
-		//cout<<"Sample.x = "<<sample.x<<" Sample.y = "<<sample.y<<endl;
 		raytracer.trace(ray, 0, &color);
 		film.commit(sample, color);
 	}

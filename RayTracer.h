@@ -62,11 +62,12 @@ public:
 	Camera(float x, float y, float z, int screenWidth, int screenHeight);
 	Camera(Point p, int screenWidth, int screenHeight);
 	Camera(Point pos, Point lookAt, Vector3 up, float fov, int screenWidth, int screenHeight);
-	Vector3 upVector;
+	Vector3 u_basis, v_basis, w_basis;
 	Point lookAt;
 	Point pos;
 	float aspectRatio;
 	int screenWidth, screenHeight;
+	float imageWidth, imageHeight;
 	float l,r,t,b;
 	Vector3 UL, UR, LL, LR;
 	void generateRay(Sample & sample, Ray* ray);

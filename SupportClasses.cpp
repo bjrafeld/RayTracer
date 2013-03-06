@@ -1,5 +1,6 @@
 #include "SupportClasses.h"
 
+
 inline float sqr(float x) {return x * x;}
 
 Vector3::Vector3() {
@@ -61,6 +62,25 @@ float Vector3::magnitude() {
 
 float Vector3::dotProduct(const Vector3 v1, const Vector3 v2) {
 	return ((v1.x*v2.x) + (v1.y*v2.y) + (v1.z*v2.z));
+}
+
+Vector3 Vector3::crossProduct(Vector3 v1, Vector3 v2) {
+	vector <vector <float> > vectorProduct(2, vector<float>(2, 0.0));
+	vectorProduct[0][0] = v1.y;
+	vectorProduct[1][0] = v1.z;
+	vectorProduct[0][1] = v2.y;
+	vectorProduct[1][1] = v2.z;
+	float x = Matrix::twoDeterminant(vectorProduct);
+
+	vectorProduct[0][0] = v1.x;
+	vectorProduct[0][1] = v2.x;
+	float y = Matrix::twoDeterminant(vectorProduct);
+
+	vectorProduct[1][0] = v1.y;
+	vectorProduct[1][1] = v2.y;
+	float z = Matrix::twoDeterminant(vectorProduct);
+
+	return Vector3(x, y, z);
 }
 
 Point::Point() {
@@ -280,6 +300,23 @@ Matrix::Matrix(vector <vector <float> > input) {
 
 Matrix::Matrix() {
 	this->mat = vector< vector<float> >(4, vector <float>(4, 0.0));
+
+	vector<float> column0(4);
+	column0[0] = 1.0;
+	column0[1] = column0[2] = column0[3] = 0.0;
+	vector<float> column1(4);
+	column1[1] = 1.0;
+	column1[0] = column1[2] = column1[3] = 0.0;
+	vector<float> column2(4);
+	column2[2] = 1.0;
+	column2[0] = column2[1] = column2[3] = 0.0;
+	vector<float> column3(4);
+	column3[3] = 1.0;
+	column3[0] = column3[1] = column3[2] = 0.0;
+	this->mat[0] = column0;
+	this->mat[1] = column1;
+	this->mat[2] = column2;
+	this->mat[3] = column3;
 }
 
 Matrix Matrix::operator*(float n) {
@@ -730,6 +767,10 @@ bool AggregatePrimitive::intersectP(Ray & ray) {
 // Material
 Material::Material(BRDF brdf) {
 	this->constantBRDF = brdf;
+}
+
+Material::Material() {
+
 }
 
 void Material::getBRDF(LocalGeo& local, BRDF* brdf) {

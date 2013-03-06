@@ -10,6 +10,6 @@
 
 using namespace std;
 
-void loadScene(string file);
+void loadScene(string file, Scene* scene);
 
 #endif
