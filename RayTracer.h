@@ -6,6 +6,8 @@
 #include "Shading.h"
 #include "SupportClasses.h"
 
+using namespace std;
+
 class RayTracer;
 class Sampler;
 class Light;

@@ -1,7 +1,7 @@
 
 #include "Parser.h"
-#include "SupportClasses.h"
-#include "RayTracer.cpp"
+
+using namespace std;
 
 int main(int argc, char *argv[]) {
 	//filename argument

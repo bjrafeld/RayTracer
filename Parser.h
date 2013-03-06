@@ -6,7 +6,6 @@
 #include <vector>
 #include <iostream>
 
-#include "SupportClasses.h"
 #include "RayTracer.h"
 
 using namespace std;
