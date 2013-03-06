@@ -1,6 +1,10 @@
+#ifndef RAYTRACER_H
+#define RAYTRACER_H
+
 
 #include "FreeImage.h"
 #include "Shading.h"
+#include "SupportClasses.h"
 
 class RayTracer;
 class Sampler;
@@ -55,7 +59,11 @@ public:
 	Camera();
 	Camera(float x, float y, float z, int screenWidth, int screenHeight);
 	Camera(Point p, int screenWidth, int screenHeight);
+	Camera(Point pos, Point lookAt, Vector3 up, float fov, int screenWidth, int screenHeight);
+	Vector3 upVector;
+	Point lookAt;
 	Point pos;
+	float aspectRatio;
 	int screenWidth, screenHeight;
 	float l,r,t,b;
 	Vector3 UL, UR, LL, LR;
@@ -83,6 +91,9 @@ public:
 	Point camerapos;
 	int screenHeight, screenWidth;
 	string filename;
+	Scene();
 	Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz, string filename);
 	void render();
 };
+
+#endif

@@ -1,11 +1,11 @@
 #include "Parser.h"
 
 
-void loadScene(string file) {
+void loadScene(string file, Scene* scene) {
 
   //store variables and set stuff at the end
   int width, height;
-  string fname = "output.bmp";
+  string fname = "output.png";
 
   ifstream inpfile(file.c_str());
   if(!inpfile.is_open()) {
@@ -40,6 +40,8 @@ void loadScene(string file) {
       else if(!splitline[0].compare("size")) {
         width = atoi(splitline[1].c_str());
         height = atoi(splitline[2].c_str());
+        scene->screenWidth = width;
+        scene->screenHeight = height;
       }
       //maxdepth depth
       //  max # of bounces for ray (default 5)
@@ -50,24 +52,31 @@ void loadScene(string file) {
       //  output file to write image to 
       else if(!splitline[0].compare("output")) {
         fname = splitline[1];
+        scene->filename = fname;
       }
 
       //camera lookfromx lookfromy lookfromz lookatx lookaty lookatz upx upy upz fov
       //  speciï¬es the camera in the standard way, as in homework 2.
       else if(!splitline[0].compare("camera")) {
         // lookfrom:
-        //    atof(splitline[1].c_str())
-        //    atof(splitline[2].c_str())
-        //    atof(splitline[3].c_str())
+        float lookfromX =    atof(splitline[1].c_str());
+        float lookfromY =    atof(splitline[2].c_str());
+        float lookfromZ =    atof(splitline[3].c_str());
+        Point cameraPos(lookfromX, lookfromY, lookfromZ);
         // lookat:
-        //    atof(splitline[4].c_str())
-        //    atof(splitline[5].c_str())
-        //    atof(splitline[6].c_str())
+        float lookatX =    atof(splitline[4].c_str());
+        float lookatY =    atof(splitline[5].c_str());
+        float lookatZ =    atof(splitline[6].c_str());
+        Point cameraLookAt(lookatX, lookatY, lookatZ);
         // up:
-        //    atof(splitline[7].c_str())
-        //    atof(splitline[8].c_str())
-        //    atof(splitline[9].c_str())
-        // fov: atof(splitline[10].c_str());
+        float upX =    atof(splitline[7].c_str());
+        float upY =    atof(splitline[8].c_str());
+        float upZ =    atof(splitline[9].c_str());
+        Vector3 upVector(upX, upY, upZ);
+        float fov = atof(splitline[10].c_str());
+
+        Camera camera(cameraPos, cameraLookAt, upVector, fov, width, height);
+        scene->camera = camera;
       }
 
       //sphere x y z radius
@@ -193,23 +202,34 @@ void loadScene(string file) {
       //directional x y z r g b
       //  The direction to the light source, and the color, as in OpenGL.
       else if(!splitline[0].compare("directional")) {
-        // x: atof(splitline[1].c_str()),
-        // y: atof(splitline[2].c_str()),
-        // z: atof(splitline[3].c_str()));
-        // r: atof(splitline[4].c_str()),
-        // g: atof(splitline[5].c_str()),
-        // b: atof(splitline[6].c_str()));
+        float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
+        Vector3 lightDirection(-x, -y, -z);
+  
+        float r = atof(splitline[4].c_str());
+        float g = atof(splitline[5].c_str());
+        float b = atof(splitline[6].c_str());
+        Color lightColor(r, g, b);
+
+        DirectionalLight directionalLight(lightDirection, lightColor);
         // add light to scene...
       }
       //point x y z r g b
       //  The location of a point source and the color, as in OpenGL.
       else if(!splitline[0].compare("point")) {
-        // x: atof(splitline[1].c_str()),
-        // y: atof(splitline[2].c_str()),
-        // z: atof(splitline[3].c_str()));
-        // r: atof(splitline[4].c_str()),
-        // g: atof(splitline[5].c_str()),
-        // b: atof(splitline[6].c_str()));
+        float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
+        Point position(x, y, z);
+
+        float r = atof(splitline[4].c_str());
+        float g = atof(splitline[5].c_str());
+        float b = atof(splitline[6].c_str());
+        Color lightColor(r, g, b);
+
+        PointLight pointLight(position, lightColor);
+
         // add light to scene...
       }
       //attenuation const linear quadratic

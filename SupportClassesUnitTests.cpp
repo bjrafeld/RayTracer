@@ -255,7 +255,7 @@ int main(int argc, char *argv[]) {
 
 	random.printMatrix();
 
-	//cout<<"Creating Inverse of Matrix\n"<<endl;
+	//cout<<"Creating Inverse of Matrix\n"<<endl
 	//Matrix inv = random.inverse();
 	//inv.printMatrix();
 
