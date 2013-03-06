@@ -11,6 +11,8 @@
 #include "RayTracer.h"
 #include <cstdlib>
 
+#define PI 3.14159265
+
 RayTracer::RayTracer() {
 
 }
@@ -117,6 +119,17 @@ void DirectionalLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color
 Camera::Camera() {
 }
 
+Camera::Camera(Point cameraPos, Point lookAt, Vector3 up, float fov, int screenWidth, int screenHeight) {
+	this->pos = cameraPos;
+	this->upVector = up;
+	this->lookAt = lookAt;
+	float result = 2 * (tan((fov/2)*PI/180));
+	this->aspectRatio = screenWidth/screenHeight;
+	float imageHeight = result/aspectRatio;
+	float imageWidth = imageHeight * aspectRatio;
+
+}
+
 Camera::Camera(float x, float y, float z, int screenWidth, int screenHeight) {
 	Point p(x, y, z);
 	this->pos = p;
@@ -200,6 +213,9 @@ void Film::writeImage() {
 	FreeImage_DeInitialise();
 }
 
+Scene::Scene() {
+}
+
 Scene::Scene(int screenWidth, int screenHeight, float camerax, float cameray, float cameraz, string filename) {
 	this->filename = filename;
 	this->screenHeight = screenHeight;
@@ -222,61 +238,4 @@ void Scene::render() {
 		film.commit(sample, color);
 	}
 	film.writeImage();
-}
-
-int main(int argc, char *argv[]) {
-	//filename argument
-	//obj file arg (Camera pos, object poss, lights, etc) -> obj parser
-	//resolution args
-	string arg = argv[1];
-	int width = atoi(argv[2]);
-	int height = atoi(argv[3]);
-	Scene scene(width, height, 0.0, 0.0, 0.0, arg);
-	
-	// Identity matrix
-	vector<float> column0(4);
-	column0[0] = 1.0;
-	column0[1] = column0[2] = column0[3] = 0.0;
-	vector<float> column1(4);
-	column1[1] = 1.0;
-	column1[0] = column1[2] = column1[3] = 0.0;
-	vector<float> column2(4);
-	column2[2] = 1.0;
-	column2[0] = column2[1] = column2[3] = 0.0;
-	vector<float> column3(4);
-	column3[3] = 1.0;
-	column3[0] = column3[1] = column3[2] = 0.0;
-	vector <vector <float> > identity(4);
-	identity[0] = column0;
-	identity[1] = column1;
-	identity[2] = column2;
-	identity[3] = column3;
-	Matrix m(identity);
-
-	//Temporary Scene Construction
-	GeometricPrimitive sphere;
-	sphere.shape = new Sphere(Point(0.0, 0.0, -3.0), 1.0);
-	sphere.mat = new Material(BRDF(Color(0.0, 0.0, 0.0), Color(1.0, 0.0, 1.0), Color(0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0), 20.0));
-	sphere.objToWorld = Transformation(m);
-	sphere.worldToObj = Transformation(m);
-
-	GeometricPrimitive sphere2;
-	sphere2.shape = new Sphere(Point(-0.5, 0.5, -2.0), 0.3);
-	sphere2.mat = new Material(BRDF(Color(0.0, 0.0, 0.0), Color(0.0, 1.0, 1.0), Color(0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0), 20.0));
-	sphere2.objToWorld = Transformation(m);
-	sphere2.worldToObj = Transformation(m);
-
-	PointLight thomasJefferson = PointLight(Point(1.0, 1.0, -1.0), Color(1.0, 1.0, 1.0));
-	DirectionalLight georgeWashington = DirectionalLight(Vector3(1.0, 0.0, -1.0), Color(0.5, 0.5, 0.5));
-	scene.allSceneLights.push_back(&georgeWashington);
-	scene.allSceneLights.push_back(&thomasJefferson);
-
-	
-	vector<GeometricPrimitive*> list;
-	list.push_back(&sphere);
-	list.push_back(&sphere2);
-	scene.aggPrimitives = AggregatePrimitive(list);
-
-	scene.render();
-	
 }

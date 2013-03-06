@@ -1,6 +1,8 @@
+#ifndef SUPPORTCLASSES_H
+#define SUPPORTCLASSES_H
+
 #include <cmath>
 #include <iostream>
-#include "Parser.h"
 
 using namespace std;
 
@@ -241,3 +243,5 @@ public:
     Material(BRDF brdf);
     void getBRDF(LocalGeo& local, BRDF* brdf);
 };
+
+#endif
