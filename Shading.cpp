@@ -8,7 +8,7 @@ Shader::Shader() {
 
 }
 
-Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const Point camera) {
+Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const Point camera, Vector3 rayDir) {
 	Color outputColor;
 	// ambient
 	outputColor = outputColor + (brdf.ka * (*lcolor));
@@ -22,9 +22,9 @@ Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const
 	Vector3 reflectedVector = this->reflectedVector(lray->dir.normalize(), local.normal.normalToVector());
 	//Vector3 viewer = Vector3::pointSubtraction(camera, Point());
 	//Vector3 viewer = Vector3::pointSubtraction(camera, local.pos); //woof woof
-
+	//VIEWER IS NEGATIVE CAMERA RAY
 	//Camera Direction
-	Vector3 viewer(0.0, 0.0, 1.0);
+	Vector3 viewer = rayDir * -1;
 	float reflectedDotProduct = max(Vector3::dotProduct(reflectedVector, viewer), 0.0f);
 	specular = (brdf.ks * pow(reflectedDotProduct, brdf.alphaConstant)) *(*lcolor);
 	outputColor = outputColor + specular;

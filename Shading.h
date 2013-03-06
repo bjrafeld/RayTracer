@@ -14,7 +14,7 @@ class Shader;
 class Shader {
 public:
 	Shader();
-	Color shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const Point camera);
+	Color shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const Point camera, Vector3 rayDir);
 	Vector3 reflectedVector(Vector3 lightDirection, Vector3 normal);
 };
 

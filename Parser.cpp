@@ -14,6 +14,10 @@ void loadScene(string file, Scene* scene) {
     string line;
     //MatrixStack mst;
 
+    Material currentMaterial;
+    GeometricPrimitive* currentPrimitive;
+    Matrix m;
+    Transformation currentTransform(m);
     while(inpfile.good()) {
       vector<string> splitline;
       string buf;
@@ -82,10 +86,21 @@ void loadScene(string file, Scene* scene) {
       //sphere x y z radius
       //  Deï¬nes a sphere with a given position and radius.
       else if(!splitline[0].compare("sphere")) {
-        // x: atof(splitline[1].c_str())
-        // y: atof(splitline[1].c_str())
-        // z: atof(splitline[1].c_str())
-        // r: atof(splitline[4].c_str())
+        /*float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
+        Point p(x, y, z);
+
+        float r = atof(splitline[4].c_str());
+        Sphere s(p, r);
+        (*currentPrimitive->shape) = s;
+       (*currentPrimitive->mat) = currentMaterial;
+        currentPrimitive->objToWorld = currentTransform;
+        Transformation invt(currentTransform.minvt);
+        currentPrimitive->worldToObj = invt;*/
+
+        //HOW TO ADD TO POINTERS
+
         // Create new sphere:
         //   Store 4 numbers
         //   Store current property values
@@ -213,6 +228,7 @@ void loadScene(string file, Scene* scene) {
         Color lightColor(r, g, b);
 
         DirectionalLight directionalLight(lightDirection, lightColor);
+        scene->allSceneLights.push_back(&directionalLight);
         // add light to scene...
       }
       //point x y z r g b
@@ -229,8 +245,8 @@ void loadScene(string file, Scene* scene) {
         Color lightColor(r, g, b);
 
         PointLight pointLight(position, lightColor);
-
-        // add light to scene...
+        scene->allSceneLights.push_back(&pointLight);
+        
       }
       //attenuation const linear quadratic
       //  Sets the constant, linear and quadratic attenuations 
@@ -244,31 +260,38 @@ void loadScene(string file, Scene* scene) {
       //  The global ambient color to be added for each object 
       //  (default is .2,.2,.2)
       else if(!splitline[0].compare("ambient")) {
-        // r: atof(splitline[1].c_str())
-        // g: atof(splitline[2].c_str())
-        // b: atof(splitline[3].c_str())
+        float r = atof(splitline[1].c_str());
+        float g = atof(splitline[2].c_str());
+        float b = atof(splitline[3].c_str());
+        Color ka(r, g, b);
+        currentMaterial.constantBRDF.ka = ka;
       }
 
       //diï¬€use r g b
       //  speciï¬es the diï¬€use color of the surface.
       else if(!splitline[0].compare("diffuse")) {
-        // r: atof(splitline[1].c_str())
-        // g: atof(splitline[2].c_str())
-        // b: atof(splitline[3].c_str())
+        float r = atof(splitline[1].c_str());
+        float g = atof(splitline[2].c_str());
+        float b = atof(splitline[3].c_str());
+        Color kd(r, g, b);
+        currentMaterial.constantBRDF.kd = kd;
         // Update current properties
       }
       //specular r g b 
       //  speciï¬es the specular color of the surface.
       else if(!splitline[0].compare("specular")) {
-        // r: atof(splitline[1].c_str())
-        // g: atof(splitline[2].c_str())
-        // b: atof(splitline[3].c_str())
+        float r = atof(splitline[1].c_str());
+        float g = atof(splitline[2].c_str());
+        float b = atof(splitline[3].c_str());
+        Color ks(r, g, b);
+        currentMaterial.constantBRDF.ks = ks;
         // Update current properties
       }
       //shininess s
       //  speciï¬es the shininess of the surface.
       else if(!splitline[0].compare("shininess")) {
-        // shininess: atof(splitline[1].c_str())
+        float s = atof(splitline[1].c_str());
+        currentMaterial.constantBRDF.alphaConstant = s;
         // Update current properties
       }
       //emission r g b

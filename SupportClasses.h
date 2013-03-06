@@ -41,6 +41,7 @@ public:
     float magnitude();
     static Vector3 pointSubtraction(Point target_point, Point initial_point);
     static float dotProduct(const Vector3 v1, const Vector3 v2);
+    static Vector3 crossProduct(Vector3 v1, Vector3 v2);
 };
 
 
@@ -134,11 +135,11 @@ public:
 	Matrix inverse();	 //4x4
 	static Matrix matMult(Matrix m1, Matrix m2);
 	void printMatrix();
+    static float twoDeterminant(vector < vector <float> > input);
     
 
 private:    
     static float threeDeterminant(vector < vector <float> > input);
-    static float twoDeterminant(vector < vector <float> > input);
     static Matrix adjointMatrix(vector <vector <float> > input);
     static Matrix computeInverseMatrix(vector < vector <float> > input);
     static float fourDeterminant(vector < vector <float> > input);
@@ -243,6 +244,7 @@ public:
     BRDF constantBRDF;
     Material(BRDF brdf);
     void getBRDF(LocalGeo& local, BRDF* brdf);
+    Material();
 };
 
 #endif
