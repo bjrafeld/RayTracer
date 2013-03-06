@@ -1,4 +1,5 @@
 #ifndef SHADING_H
+#define SHADING_H
 
 
 #include <vector>
