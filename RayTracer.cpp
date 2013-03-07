@@ -44,12 +44,16 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 	for(unsigned int i=0; i<scene->allSceneLights.size(); i++) {
 		
 		Ray lray;
-		lray.t_min = thit + 0.0001;	// ordering here is important
+		lray.t_min = 0.1;	// ordering here is important
 		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		Color lcolor;
 		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
-		// TODO - check if light is blocked or not before calling shading method
-		totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
+		if(!(scene->aggPrimitives.intersectP(lray))) {
+			totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
+		}
+		Color ambientColor = brdf.ka * lcolor;
+		totalColor = totalColor + ambientColor;
+		
 	}
 
 	totalColor.r = min(totalColor.r, 1.0f);
@@ -97,7 +101,7 @@ void PointLight::printSelf() {
 
 void PointLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 	lray->pos = local.pos;
-	lray->dir = Vector3::pointSubtraction(this->location, local.pos);
+	lray->dir = Vector3::pointSubtraction(this->location, local.pos).normalize();
 	color->r = this->color.r;
 	color->g = this->color.g;
 	color->b = this->color.b;
@@ -119,7 +123,7 @@ DirectionalLight::DirectionalLight(Vector3 direction, Color color) {
 
 void DirectionalLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 	lray->pos = local.pos;
-	lray->dir = this->direction * -1.0;
+	lray->dir = (this->direction * -1.0).normalize();
 	color->r = this->color.r;
 	color->g = this->color.g;
 	color->b = this->color.b;

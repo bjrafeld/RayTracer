@@ -342,6 +342,9 @@ Matrix Matrix::createTranslationMatrix(float tx, float ty, float tz) {
 	last[1] = ty;
 	last[2] = tz;
 	input[3] = last;
+	input[0][0] = 1.0;
+	input[1][1] = 1.0;
+	input[2][2] = 1.0;
 	return Matrix(input);
 }
 
@@ -627,6 +630,11 @@ LocalGeo Transformation::operator*(LocalGeo l) {
 	return LocalGeo(p, n);
 }
 
+void Transformation::pushTransform(Matrix m){
+	this->mat = Matrix::matMult(m, mat);
+	this->minvt = this->mat.inverse();
+}
+
 // SHAPES
 Shape::Shape() {
 }
@@ -686,10 +694,23 @@ bool Sphere::intersect(Ray & ray, float* thit, LocalGeo* local) {
 
 bool Sphere::intersectP(Ray & ray) {
 	float A = Vector3::dotProduct(ray.dir, ray.dir);
-	float B = Vector3::dotProduct( (ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center) );
-	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), Vector3::pointSubtraction(ray.pos, this->center)) - (this->radius * this->radius);
+	float B = Vector3::dotProduct((ray.dir * 2), Vector3::pointSubtraction(ray.pos, this->center));
+	float C = Vector3::dotProduct(Vector3::pointSubtraction(ray.pos, this->center), (Vector3::pointSubtraction(ray.pos, this->center))) - (this->radius * this->radius);
 	float determinant = (B * B) - (4 * A * C);
-	return (determinant >= 0);
+	
+	float t1 = (-B + sqrt((B*B) - (4 * A * C))) / (2 * A);
+	float t2 = (-B - sqrt((B*B) - (4 * A * C))) / (2 * A);
+
+	bool t1_out = ((t1 < ray.t_min) || (t1 > ray.t_max));
+	bool t2_out = ((t2 < ray.t_min) || (t2 > ray.t_max));
+	if(determinant >=0) {
+		if(t1_out && t2_out) {
+			return false;
+		}
+		return true;
+	}
+	//Checks to see that both t1 and t2 are out of bounds
+	return false;
 }
 
 void Sphere::printSelf() {
@@ -732,7 +753,8 @@ void GeometricPrimitive::printSelf() {
 }
 
 bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
-	Ray objRay = this->worldToObj * ray;
+	Ray objRay = (this->worldToObj * ray);
+	objRay.dir = objRay.dir.normalize();
 	LocalGeo objLocal;
 	if (!this->shape->intersect(objRay, thit, &objLocal)) return false;
 	in->primitive = this;
@@ -741,7 +763,7 @@ bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 }
 
 bool GeometricPrimitive::intersectP(Ray & ray) {
-	Ray objRay = this->worldToObj * ray;
+	Ray objRay = (this->worldToObj * ray);
 	return this->shape->intersectP(objRay);
 }
 

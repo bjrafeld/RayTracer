@@ -154,6 +154,7 @@ public:
 	Transformation();
 	Transformation(vector< vector<float> > input);
 	Transformation(Matrix m);
+	void pushTransform(Matrix m);
 	Point operator*(Point p);
 	Vector3 operator*(Vector3 v);
 	Normal operator*(Normal n);		//Needs to be changed

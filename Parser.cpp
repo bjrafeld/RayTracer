@@ -15,7 +15,6 @@ void loadScene(string file, Scene* scene) {
     //MatrixStack mst;
 
     Material currentMaterial;
-    GeometricPrimitive* currentPrimitive = new GeometricPrimitive();
     Matrix m;
     Transformation currentTransform(m);
     while(inpfile.good()) {
@@ -93,16 +92,11 @@ void loadScene(string file, Scene* scene) {
         Point p(x, y, z);
 
         float r = atof(splitline[4].c_str());
-        currentPrimitive->objToWorld = currentTransform;
         Transformation invt(currentTransform.minvt);
-        currentPrimitive->worldToObj = invt;
         //cout<<"I'm going in!"<<endl;
         scene->aggPrimitives.allPrimitives.push_back(
             new GeometricPrimitive(new Sphere(p, r), new Material(currentMaterial.constantBRDF), currentTransform, invt)
-          );
-        //cout<<"I'm wrong!!!"<<endl;
-
-        //HOW TO ADD TO POINTERS
+        );
 
         // Create new sphere:
         //   Store 4 numbers
@@ -178,9 +172,12 @@ void loadScene(string file, Scene* scene) {
       //translate x y z
       //  A translation 3-vector
       else if(!splitline[0].compare("translate")) {
-        // x: atof(splitline[1].c_str())
-        // y: atof(splitline[2].c_str())
-        // z: atof(splitline[3].c_str())
+        float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
+
+        Matrix transform = Matrix::createTranslationMatrix(x, y, z);
+        currentTransform.pushTransform(transform);
         // Update top of matrix stack
       }
       //rotate x y z angle
@@ -214,7 +211,8 @@ void loadScene(string file, Scene* scene) {
       //  (assuming the initial camera transformation is on the stack as 
       //  discussed above).
       else if(!splitline[0].compare("popTransform")) {
-        //mst.pop();
+        Matrix m;
+        currentTransform = Transformation(m);
       }
 
       //directional x y z r g b
