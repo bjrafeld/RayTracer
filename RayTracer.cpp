@@ -135,11 +135,16 @@ Camera::Camera(Point cameraPos, Point lookAt, Vector3 up, float fov, int screenW
 	this->aspectRatio = screenWidth/screenHeight;
 	this->imageHeight = result/aspectRatio;
 	this->imageWidth = imageHeight * aspectRatio;
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
 
 	//Calculate Orthonormal Basis
 	this->w_basis = ((Vector3::pointSubtraction(lookAt, cameraPos))*-1).normalize();
+	cout<<"W Basis(Forward): "<<w_basis.x<<" "<<w_basis.y<<" "<<w_basis.z<<endl;
 	this->u_basis = (Vector3::crossProduct(up, w_basis)).normalize();
+	cout<<"U Basis(Right): "<<u_basis.x<<" "<<u_basis.y<<" "<<u_basis.z<<endl;
 	this->v_basis = (Vector3::crossProduct(w_basis, u_basis)).normalize();
+	cout<<"V Basis(Up): "<<v_basis.x<<" "<<v_basis.y<<" "<<v_basis.z<<endl;
 
 	this->t = imageHeight/2;
 	this->b = -(imageHeight/2);
@@ -169,12 +174,13 @@ Camera::Camera(Point p, int screenWidth, int screenHeight) {
 void Camera::generateRay(Sample & sample, Ray* ray) {
 
 	// needs to be changed for non-origin camera positions woof woof
-	float u = l + ( ((r-l)*(sample.x + 0.5)) / screenWidth);
-	float v = b + ( ((t - b)*(sample.y + 0.5)) / screenHeight);
+	float u = (l + ( ((r - l)*(sample.x + 0.5)) / screenWidth));
+	float v = (b + ( ((t - b)*(sample.y + 0.5)) / screenHeight));
 	float w = -1;
 
 	Vector3 temporaryDirection = (w_basis*w) + (u_basis*u) + (v_basis*v);
-	ray->dir = temporaryDirection;
+	ray->dir = temporaryDirection.normalize();
+	//cout<<ray->dir.x<<" "<<ray->dir.y<<" "<<ray->dir.z<<endl;
 	ray->pos = this->pos;
 	ray->t_min = 1.0;
 	ray->t_max = 999999.0;
