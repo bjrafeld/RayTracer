@@ -18,6 +18,10 @@ void loadScene(string file, Scene* scene) {
     Material currentMaterial;
     Matrix m;
     Transformation currentTransform(m);
+    scene->depth = 1;
+    scene->background_r = 0.0;
+    scene->background_g = 0.0;
+    scene->background_b = 0.0;
 
     while(inpfile.good()) {
       vector<string> splitline;
@@ -48,10 +52,23 @@ void loadScene(string file, Scene* scene) {
         scene->screenWidth = width;
         scene->screenHeight = height;
       }
+      //background r g b
+      //sets the background color to something other than black
+      else if(!splitline[0].compare("background")) {
+        scene->background_r = atof(splitline[1].c_str());
+        scene->background_g = atof(splitline[2].c_str());
+        scene->background_b = atof(splitline[3].c_str());
+      }
       //maxdepth depth
       //  max # of bounces for ray (default 5)
       else if(!splitline[0].compare("maxdepth")) {
-        // maxdepth: atoi(splitline[1].c_str())
+        scene->depth = atoi(splitline[1].c_str());
+      }
+      //kr s
+      //percentage reflected
+      else if(!splitline[0].compare("kr")) {
+        float s = atof(splitline[1].c_str());
+        currentMaterial.constantBRDF.kr = s;
       }
       //output filename
       //  output file to write image to 

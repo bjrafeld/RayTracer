@@ -90,6 +90,8 @@ class Scene {
 public:
 	RayTracer raytracer;
 	Camera camera;
+	float background_r, background_g, background_b;
+	int depth;
 	//TODO get prims in the list
 	AggregatePrimitive aggPrimitives;
 	//TODO get lights in the list

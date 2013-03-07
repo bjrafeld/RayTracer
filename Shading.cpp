@@ -10,8 +10,6 @@ Shader::Shader() {
 
 Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const Point camera, Vector3 rayDir) {
 	Color outputColor;
-	// ambient
-	//outputColor = outputColor + (brdf.ka * (*lcolor));
 	// diffuse
 	Color diffuse;
 	float dotProduct = max(Vector3::dotProduct(lray->dir.normalize(), local.normal.normalToVector()), 0.0f);
@@ -36,7 +34,7 @@ Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const
 }	
 
 Vector3 Shader::reflectedVector(Vector3 lightDirection, Vector3 normal) {
-	float dotProduct =max(Vector3::dotProduct(lightDirection, normal), 0.0f);
+	float dotProduct =Vector3::dotProduct(lightDirection, normal);
 	Vector3 result = normal * (2.0 * dotProduct) - lightDirection;
 	return result.normalize();
 }
