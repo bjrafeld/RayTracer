@@ -44,8 +44,6 @@ void loadScene(string file, Scene* scene) {
       else if(!splitline[0].compare("size")) {
         width = atoi(splitline[1].c_str());
         height = atoi(splitline[2].c_str());
-        width = width;
-        height = height;
         scene->screenWidth = width;
         scene->screenHeight = height;
       }

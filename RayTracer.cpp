@@ -132,7 +132,7 @@ Camera::Camera(Point cameraPos, Point lookAt, Vector3 up, float fov, int screenW
 	this->pos = cameraPos;
 	this->lookAt = lookAt;
 	float result = 2 * (tan((fov/2)*PI/180));
-	this->aspectRatio = screenWidth/screenHeight;
+	this->aspectRatio = (float)screenWidth/screenHeight;
 	this->imageHeight = result/aspectRatio;
 	this->imageWidth = imageHeight * aspectRatio;
 	this->screenWidth = screenWidth;
@@ -140,11 +140,8 @@ Camera::Camera(Point cameraPos, Point lookAt, Vector3 up, float fov, int screenW
 
 	//Calculate Orthonormal Basis
 	this->w_basis = ((Vector3::pointSubtraction(lookAt, cameraPos))*-1).normalize();
-	cout<<"W Basis(Forward): "<<w_basis.x<<" "<<w_basis.y<<" "<<w_basis.z<<endl;
 	this->u_basis = (Vector3::crossProduct(up, w_basis)).normalize();
-	cout<<"U Basis(Right): "<<u_basis.x<<" "<<u_basis.y<<" "<<u_basis.z<<endl;
 	this->v_basis = (Vector3::crossProduct(w_basis, u_basis)).normalize();
-	cout<<"V Basis(Up): "<<v_basis.x<<" "<<v_basis.y<<" "<<v_basis.z<<endl;
 
 	this->t = imageHeight/2;
 	this->b = -(imageHeight/2);
