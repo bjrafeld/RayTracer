@@ -44,6 +44,8 @@ void loadScene(string file, Scene* scene) {
       else if(!splitline[0].compare("size")) {
         width = atoi(splitline[1].c_str());
         height = atoi(splitline[2].c_str());
+        width = width;
+        height = height;
         scene->screenWidth = width;
         scene->screenHeight = height;
       }
@@ -79,7 +81,7 @@ void loadScene(string file, Scene* scene) {
         Vector3 upVector(upX, upY, upZ);
         float fov = atof(splitline[10].c_str());
 
-        Camera camera(cameraPos, cameraLookAt, upVector, fov, width, height);
+        Camera camera(cameraPos, cameraLookAt, upVector, fov, scene->screenWidth, scene->screenHeight);
         scene->camera = camera;
       }
 

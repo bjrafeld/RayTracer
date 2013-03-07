@@ -9,10 +9,13 @@ Vector3::Vector3() {
 	this->x = 0.0;
 }
 
-Vector3::Vector3(float x, float y, float z) {
-	this->x = x;
-	this->y = y;
-	this->z = z;
+Vector3::Vector3(float x1, float y1, float z1) {
+	if(x1 == 0.0f) x1=0*1;
+	if(y1 == 0.0f) y1=0*1;
+	if(z1 == 0.0f) z1=0*1;
+	this->x = x1;
+	this->y = y1;
+	this->z = z1;
 }
 
 Vector3 Vector3::operator+(Vector3 v) {
@@ -53,6 +56,9 @@ Vector3 Vector3::normalize() {
 	result.x = x/magnitude;
 	result.y = y/magnitude;
 	result.z = z/magnitude;
+	if(result.x==0.0f) result.x = 0;
+	if(result.y==0.0f) result.y = 0;
+	if(result.z==0.0f) result.z = 0;
 	return result;
 }
 
@@ -74,7 +80,7 @@ Vector3 Vector3::crossProduct(Vector3 v1, Vector3 v2) {
 
 	vectorProduct[0][0] = v1.x;
 	vectorProduct[0][1] = v2.x;
-	float y = Matrix::twoDeterminant(vectorProduct);
+	float y = -1*Matrix::twoDeterminant(vectorProduct);
 
 	vectorProduct[1][0] = v1.y;
 	vectorProduct[1][1] = v2.y;
@@ -758,6 +764,7 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
 		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
+			//cout<<"Hit Something"<<endl;
 			hitSomething = true;
 			if((*new_Hit) < (*thit)) {
 				(*thit) = (*new_Hit);
