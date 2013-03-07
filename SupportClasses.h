@@ -173,7 +173,7 @@ public:
 };
 
 // Sphere Class
-class Sphere : public Shape{
+class Sphere : public Shape {
 public:
     Point center;
     float radius;
@@ -188,9 +188,12 @@ public:
 
 // Triangle Class
 
-class Triangle : Shape{
+class Triangle : public Shape {
 public:
+    Point vert_a, vert_b, vert_c;
+    Normal normal;
     Triangle();
+    Triangle(Point vertexA, Point vertexB, Point vertexC, Normal n);
 
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);

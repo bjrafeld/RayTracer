@@ -16,7 +16,7 @@ void loadScene(string file, Scene* scene) {
     //MatrixStack mst;
 
     Material currentMaterial;
-    GeometricPrimitive* currentPrimitive;
+    GeometricPrimitive* currentPrimitive = new GeometricPrimitive();
     Matrix m;
     Transformation currentTransform(m);
     while(inpfile.good()) {
@@ -87,20 +87,28 @@ void loadScene(string file, Scene* scene) {
       //sphere x y z radius
       //  Deï¬nes a sphere with a given position and radius.
       else if(!splitline[0].compare("sphere")) {
-         float x = atof(splitline[1].c_str());
+        float x = atof(splitline[1].c_str());
         float y = atof(splitline[2].c_str());
         float z = atof(splitline[3].c_str());
         Point p(x, y, z);
-
         float r = atof(splitline[4].c_str());
-        Sphere s(p, r);
-        (*currentPrimitive->shape) = s;
-        (*currentPrimitive->mat) = currentMaterial;
+
+        Sphere* s = new Sphere(p, r);
+        BRDF brdf;
+        brdf.ka = Color(1.0, 1.0, 1.0);
+        brdf.kd = Color(1.0, 1.0, 1.0);
+        brdf.ks = Color(1.0, 1.0, 1.0);
+        brdf.kr = Color(1.0, 1.0, 1.0);
+        brdf.alphaConstant = 10.0;
+        currentMaterial = Material(brdf);
+        currentPrimitive->shape = s;
+        *(currentPrimitive->mat) = currentMaterial;
         currentPrimitive->objToWorld = currentTransform;
         Transformation invt(currentTransform.minvt);
         currentPrimitive->worldToObj = invt;
-        //scene->aggPrimitives.allPrimitives.push_back(&currentPrimitive);
 
+        scene->aggPrimitives.allPrimitives.push_back(currentPrimitive);
+        //scene->aggPrimitives.allPrimitives.push_back(*currentPrimitive);
         //HOW TO ADD TO POINTERS
 
         // Create new sphere:
