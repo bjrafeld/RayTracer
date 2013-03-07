@@ -192,15 +192,17 @@ public:
 
 class Triangle : public Shape{
 public:
-    Point vert_a, vert_b, vert_c;
+    int vert_a_index, vert_b_index, vert_c_index;
+    vector<Point*>* vertices;
     Normal normal;
     Triangle();
-    Triangle(Point vertexA, Point vertexB, Point vertexC, Normal n);
+    Triangle(int vertexA, int vertexB, int vertexC, vector<Point*>* allVertices);
 
     // tests if a ray intersects this shape, and if so, returns the intersection point and normal in the form of a LocalGeo
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
     virtual bool intersectP(Ray & ray);
+    virtual void printSelf();
 };
 
 // Intersection

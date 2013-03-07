@@ -698,21 +698,35 @@ void Sphere::printSelf() {
 }
 
 Triangle::Triangle() {
-	vert_a = Point();
-	vert_b = Point();
-	vert_c = Point();
+	vert_a_index = 0;
+	vert_b_index = 0;
+	vert_c_index = 0;
 	normal = Normal();
 }
 
-Triangle::Triangle(Point vertexA, Point vertexB, Point vertexC, Normal n) {
-	vert_a = vertexA;
-	vert_b = vertexB;
-	vert_c = vertexC;
-	normal = n;
+Triangle::Triangle(int vertexA, int vertexB, int vertexC, vector<Point*>* allVertices) {
+	this->vert_a_index = vertexA;
+	this->vert_b_index = vertexB;
+	this->vert_c_index = vertexC;
+	this->vertices = allVertices;
+
+	Point vert_a = *((*vertices)[vert_a_index]);
+	Point vert_b = *((*vertices)[vert_b_index]);
+	Point vert_c = *((*vertices)[vert_c_index]);
+
+	Vector3 edge_a = Vector3::pointSubtraction(vert_b, vert_a);
+	Vector3 edge_b = Vector3::pointSubtraction(vert_c, vert_a);
+	Vector3 tri_normal = Vector3::crossProduct(edge_a, edge_b).normalize();
+	normal.x = tri_normal.x;
+	normal.y = tri_normal.y;
+	normal.z = tri_normal.z;
 }
 
 bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
 	
+	Point vert_a = *((*vertices)[vert_a_index]);
+	Point vert_b = *((*vertices)[vert_b_index]);
+	Point vert_c = *((*vertices)[vert_c_index]);
 	// setup matrix variables to compute beta, gamma, t. Page 79 in the book
 	float a = vert_a.x - vert_b.x;
 	float b = vert_a.y - vert_b.y;
@@ -754,6 +768,9 @@ bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
 }
 
 bool Triangle::intersectP(Ray & ray) {
+	Point vert_a = *((*vertices)[vert_a_index]);
+	Point vert_b = *((*vertices)[vert_b_index]);
+	Point vert_c = *((*vertices)[vert_c_index]);
 	
 	// setup matrix variables to compute beta, gamma, t. Page 79 in the book
 	float a = vert_a.x - vert_b.x;
@@ -789,6 +806,10 @@ bool Triangle::intersectP(Ray & ray) {
 		return false;
 
 	return true;
+}
+
+void Triangle::printSelf() {
+	cout << "Triangle, motherfucker! My vertices (in index form) are: " << this->vert_a_index <<" "<<this->vert_b_index<<" "<<this->vert_c_index<<endl;
 }
 
 // Intersection
