@@ -23,16 +23,16 @@ RayTracer::RayTracer(Scene* scene) {
 }
 
 void RayTracer::trace(Ray & ray, int depth, Color* color) {
-
+	//if(depth>2) cout<<depth<<endl;
 	float thit = 1000000.0;
 	Intersection in;
 
-	if(depth >1) {
+	if(depth >= scene->depth) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
 	if(!scene->aggPrimitives.intersect(ray, &thit, &in)) {
-		color->setColor(0.0, 0.0, 0.0);
+		color->setColor(scene->background_r, scene->background_g, scene->background_b);
 		//cout<<"Not intersecting anything\n"<<endl;
 		return;
 	} 
@@ -42,18 +42,24 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 
 	Color totalColor;
 	for(unsigned int i=0; i<scene->allSceneLights.size(); i++) {
-		
-		Ray lray;
-		lray.t_min = 0.1;	// ordering here is important
-		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		Color lcolor;
+		Ray lray;
+		lray.t_min = 0.01;	// ordering here is important
+		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
 		if(!(scene->aggPrimitives.intersectP(lray))) {
 			totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
 		}
-		Color ambientColor = brdf.ka * lcolor;
-		totalColor = totalColor + ambientColor;
 		
+	}
+	totalColor = totalColor + brdf.ka;
+
+	if(brdf.kr > 0.0) {
+		Ray reflectRay = Ray::createReflectRay(in.localGeo, ray);
+
+		Color tempColor;
+		this->trace(reflectRay, (depth+1), &tempColor);
+		totalColor = totalColor + ((brdf.ks * tempColor)*brdf.kr);
 	}
 
 	totalColor.r = min(totalColor.r, 1.0f);
@@ -72,6 +78,17 @@ Sampler::Sampler(int screenWidth, int screenHeight) {
 
 bool Sampler::getSample(Sample* sample) {
 	// update this method in the future to allow for multiple sampling / anti-aliasing 
+	if(yPixel==0 && xPixel==0) {
+		cout<<"Starting Raytracing..."<<endl;
+	} else if((yPixel==screenHeight/4) && (xPixel==0)) {
+		cout<<"25 percent there"<<endl;
+	} else if(yPixel == screenHeight/2&& xPixel==0) {
+		cout<<"Halfway there"<<endl;
+	} else if(yPixel==(3*(screenHeight/4)) && xPixel==0) {
+		cout<<"75 percent done."<<endl;
+	} else if(yPixel==(screenHeight-1) && xPixel==0) {
+		cout<<"Almost Done!"<<endl;
+	}
 	if (yPixel >= screenHeight) {
 		return false;
 	}

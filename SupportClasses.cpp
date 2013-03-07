@@ -1,4 +1,5 @@
 #include "SupportClasses.h"
+#include <algorithm>
 
 
 inline float sqr(float x) {return x * x;}
@@ -214,6 +215,14 @@ Ray::Ray(Point p, Vector3 v, float t_min, float t_max) {
 	this->t_max = t_max;
 }
 
+Ray Ray::createReflectRay(LocalGeo local, Ray ray) {
+	Vector3 n = local.normal.normalToVector();
+	float dotProduct = Vector3::dotProduct(ray.dir.normalize(), n);
+	Vector3 direction = n * (2.0 * dotProduct) - ray.dir.normalize();
+	Ray result(local.pos, direction.normalize(), 0.01, 999999.99);
+	return result;
+}
+
 Color::Color() {
 	r=0.0;
 	g=0.0;
@@ -288,11 +297,11 @@ BRDF::BRDF() {
 	this->ka = Color();
 	this->kd = Color();
 	this->ks = Color();
-	this->kr = Color();
+	this->kr = 0.0;
 	this->alphaConstant = 0.0;
 }
 
-BRDF::BRDF(Color ka, Color kd, Color ks, Color kr, float alphaConstant) {
+BRDF::BRDF(Color ka, Color kd, Color ks, float kr, float alphaConstant) {
 	this->ka = ka;
 	this->kd = kd;
 	this->ks = ks;

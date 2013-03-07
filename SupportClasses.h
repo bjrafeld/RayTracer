@@ -76,6 +76,7 @@ public:
 	float t_min, t_max;
 	Ray();
 	Ray(Point p, Vector3 v, float t_min, float t_max);
+	static Ray createReflectRay(LocalGeo local, Ray ray);
 };
 
 class Color {
@@ -107,10 +108,11 @@ public:
 
 class BRDF {
 public:
-	Color ka, kd, ks, kr;
+	Color ka, kd, ks;
+	float kr;
     float alphaConstant;
 	BRDF();
-	BRDF(Color ka, Color kd, Color ks, Color kr, float alphaConstant);
+	BRDF(Color ka, Color kd, Color ks, float kr, float alphaConstant);
 };
 
 
