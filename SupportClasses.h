@@ -170,6 +170,7 @@ public:
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
     virtual bool intersectP(Ray & ray);
+    virtual void printSelf() = 0;
 };
 
 // Sphere Class
@@ -184,11 +185,12 @@ public:
     virtual bool intersect(Ray & ray, float* thit, LocalGeo* local);
     // tests if a ray intersects this shape, returns true if so
     virtual bool intersectP(Ray & ray);
+    virtual void printSelf();
 };
 
 // Triangle Class
 
-class Triangle : public Shape {
+class Triangle : public Shape{
 public:
     Point vert_a, vert_b, vert_c;
     Normal normal;
@@ -215,19 +217,22 @@ public:
     virtual bool intersect(Ray & ray, float* thit, Intersection* in) = 0;
     virtual bool intersectP(Ray & ray) = 0;
     virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
+    virtual void printSelf() = 0;
 };
 
 // GeometricPrimitive
-class GeometricPrimitive : Primitive {
+class GeometricPrimitive : public Primitive {
 public:
     Transformation objToWorld, worldToObj;
     Shape* shape;
     Material* mat;
 
     GeometricPrimitive();
+    GeometricPrimitive(Shape* shape, Material* m, Transformation obj, Transformation world);
     virtual bool intersect(Ray & ray, float* thit, Intersection* in);
     virtual bool intersectP(Ray & ray);
     virtual void getBRDF(LocalGeo& local, BRDF* brdf);
+    virtual void printSelf();
 };
 
 // AggregatePrimitive

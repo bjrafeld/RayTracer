@@ -87,28 +87,22 @@ void loadScene(string file, Scene* scene) {
       //sphere x y z radius
       //  Deï¬nes a sphere with a given position and radius.
       else if(!splitline[0].compare("sphere")) {
+        //POTENTIALLY ANNOYING
         float x = atof(splitline[1].c_str());
         float y = atof(splitline[2].c_str());
         float z = atof(splitline[3].c_str());
         Point p(x, y, z);
-        float r = atof(splitline[4].c_str());
 
-        Sphere* s = new Sphere(p, r);
-        BRDF brdf;
-        brdf.ka = Color(1.0, 1.0, 1.0);
-        brdf.kd = Color(1.0, 1.0, 1.0);
-        brdf.ks = Color(1.0, 1.0, 1.0);
-        brdf.kr = Color(1.0, 1.0, 1.0);
-        brdf.alphaConstant = 10.0;
-        currentMaterial = Material(brdf);
-        currentPrimitive->shape = s;
-        *(currentPrimitive->mat) = currentMaterial;
+        float r = atof(splitline[4].c_str());
         currentPrimitive->objToWorld = currentTransform;
         Transformation invt(currentTransform.minvt);
         currentPrimitive->worldToObj = invt;
+        //cout<<"I'm going in!"<<endl;
+        scene->aggPrimitives.allPrimitives.push_back(
+            new GeometricPrimitive(new Sphere(p, r), new Material(currentMaterial.constantBRDF), currentTransform, invt)
+          );
+        //cout<<"I'm wrong!!!"<<endl;
 
-        scene->aggPrimitives.allPrimitives.push_back(currentPrimitive);
-        //scene->aggPrimitives.allPrimitives.push_back(*currentPrimitive);
         //HOW TO ADD TO POINTERS
 
         // Create new sphere:
@@ -236,9 +230,8 @@ void loadScene(string file, Scene* scene) {
         float g = atof(splitline[5].c_str());
         float b = atof(splitline[6].c_str());
         Color lightColor(r, g, b);
-
-        DirectionalLight directionalLight(lightDirection, lightColor);
-        scene->allSceneLights.push_back(&directionalLight);
+      //DirectionalLight directionalLight(lightDirection, lightColor);
+        scene->allSceneLights.push_back(new DirectionalLight(lightDirection, lightColor));
         // add light to scene...
       }
       //point x y z r g b
@@ -254,9 +247,8 @@ void loadScene(string file, Scene* scene) {
         float b = atof(splitline[6].c_str());
         Color lightColor(r, g, b);
 
-        PointLight pointLight(position, lightColor);
-        scene->allSceneLights.push_back(&pointLight);
-        
+        //PointLight pointLight(position, lightColor);
+        scene->allSceneLights.push_back(new PointLight(position, lightColor));
       }
       //attenuation const linear quadratic
       //  Sets the constant, linear and quadratic attenuations 
