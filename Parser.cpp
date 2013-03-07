@@ -1,5 +1,6 @@
 #include "Parser.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 
 void loadScene(string file, Scene* scene) {
 
@@ -17,6 +18,7 @@ void loadScene(string file, Scene* scene) {
     Material currentMaterial;
     Matrix m;
     Transformation currentTransform(m);
+
     while(inpfile.good()) {
       vector<string> splitline;
       string buf;
@@ -110,6 +112,8 @@ void loadScene(string file, Scene* scene) {
         // Care if you want
         // Here, either declare array size
         // Or you can just use a STL vector, in which case you can ignore this
+
+        // ignoring for now, just using STL
       }
       //maxvertnorms number
       //  Deï¬nes a maximum number of vertices with normals for later speciï¬cations.
@@ -121,10 +125,11 @@ void loadScene(string file, Scene* scene) {
       //  Deï¬nes a vertex at the given location.
       //  The vertex is put into a pile, starting to be numbered at 0.
       else if(!splitline[0].compare("vertex")) {
-        // x: atof(splitline[1].c_str()),
-        // y: atof(splitline[2].c_str()),
-        // z: atof(splitline[3].c_str()));
+        float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
         // Create a new vertex with these 3 values, store in some array
+        scene->allVertices.push_back(new Point(x, y, z));
       }
       //vertexnormal x y z nx ny nz
       //  Similar to the above, but deï¬ne a surface normal with each vertex.
@@ -144,15 +149,19 @@ void loadScene(string file, Scene* scene) {
       //  the vertex command). The vertices are assumed to be speciï¬ed in counter-clockwise order. Your code
       //  should internally compute a face normal for this triangle.
       else if(!splitline[0].compare("tri")) {
-        // v1: atof(splitline[1].c_str())
-        // v2: atof(splitline[2].c_str())
-        // v3: atof(splitline[3].c_str())
+        int v1 = atof(splitline[1].c_str());
+        int v2 = atof(splitline[2].c_str());
+        int v3 = atof(splitline[3].c_str());
         // Create new triangle:
         //   Store pointer to array of vertices
         //   Store 3 integers to index into array
         //   Store current property values
         //   Store current top of matrix stack
-      }
+        Transformation invt(currentTransform.minvt);
+        scene->aggPrimitives.allPrimitives.push_back(
+          new GeometricPrimitive(new Triangle(v1, v2, v3, &(scene->allVertices)), new Material(currentMaterial.constantBRDF), currentTransform, invt)
+        );
+      } 
       //trinormal v1 v2 v3
       //  Same as above but for vertices speciï¬ed with normals.
       //  In this case, each vertex has an associated normal, 

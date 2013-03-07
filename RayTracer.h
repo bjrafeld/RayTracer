@@ -94,6 +94,7 @@ public:
 	AggregatePrimitive aggPrimitives;
 	//TODO get lights in the list
 	vector<Light*> allSceneLights;
+	vector<Point*> allVertices;
 	Point camerapos;
 	int screenHeight, screenWidth;
 	string filename;

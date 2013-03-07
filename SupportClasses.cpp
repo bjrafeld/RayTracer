@@ -719,17 +719,118 @@ void Sphere::printSelf() {
 }
 
 Triangle::Triangle() {
-	// TODO
+	vert_a_index = 0;
+	vert_b_index = 0;
+	vert_c_index = 0;
+	normal = Normal();
+}
+
+Triangle::Triangle(int vertexA, int vertexB, int vertexC, vector<Point*>* allVertices) {
+	this->vert_a_index = vertexA;
+	this->vert_b_index = vertexB;
+	this->vert_c_index = vertexC;
+	this->vertices = allVertices;
+
+	Point vert_a = *((*vertices)[vert_a_index]);
+	Point vert_b = *((*vertices)[vert_b_index]);
+	Point vert_c = *((*vertices)[vert_c_index]);
+
+	Vector3 edge_a = Vector3::pointSubtraction(vert_b, vert_a);
+	Vector3 edge_b = Vector3::pointSubtraction(vert_c, vert_a);
+	Vector3 tri_normal = Vector3::crossProduct(edge_a, edge_b).normalize();
+	normal.x = tri_normal.x;
+	normal.y = tri_normal.y;
+	normal.z = tri_normal.z;
 }
 
 bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
-	// TODO
-	return false;
+	
+	Point vert_a = *((*vertices)[vert_a_index]);
+	Point vert_b = *((*vertices)[vert_b_index]);
+	Point vert_c = *((*vertices)[vert_c_index]);
+	// setup matrix variables to compute beta, gamma, t. Page 79 in the book
+	float a = vert_a.x - vert_b.x;
+	float b = vert_a.y - vert_b.y;
+	float c = vert_a.z - vert_b.z;
+	float d = vert_a.x - vert_c.x;
+	float e = vert_a.y - vert_c.y;
+	float f = vert_a.z - vert_c.z;
+	float g = ray.dir.x;
+	float h = ray.dir.y;
+	float i = ray.dir.z;
+	float j = vert_a.x - ray.pos.x;
+	float k = vert_a.y - ray.pos.y;
+	float l = vert_a.z - ray.pos.z;
+	float ei_hf = ((e*i)-(h*f));
+	float gf_di = ((g*f)-(d*i));
+	float dh_eg = ((d*h)-(e*g));
+	float ak_jb = ((a*k)-(j*b));
+	float jc_al = ((j*c)-(a*l));
+	float bl_kc = ((b*l)-(k*c));
+	float M = (a*ei_hf) + (b*gf_di) + (c*dh_eg);
+
+	float t = -( ((f*ak_jb)+(e*jc_al)+(d*bl_kc)) / M);
+	if (t<ray.t_min || t>ray.t_max) 
+		return false;
+
+	float gamma = ( (i*ak_jb)+(h*jc_al)+(g*bl_kc) ) / M;
+	if (gamma<0.0 || gamma>1.0) 
+		return false;
+
+	float beta = ( (j*ei_hf)+(k*gf_di)+(l*dh_eg) ) / M;
+	if (beta<0.0 || beta>(1.0-gamma) ) 
+		return false;
+
+	(*thit) = t;
+	local->pos = Point( (ray.pos.x + ((*thit) * ray.dir.x)), (ray.pos.y + ((*thit) * ray.dir.y)), (ray.pos.z + ((*thit) * ray.dir.z)) );
+	local->normal = this->normal;
+	return true;
+
 }
 
 bool Triangle::intersectP(Ray & ray) {
-	// TODO
-	return false;
+	Point vert_a = *((*vertices)[vert_a_index]);
+	Point vert_b = *((*vertices)[vert_b_index]);
+	Point vert_c = *((*vertices)[vert_c_index]);
+	
+	// setup matrix variables to compute beta, gamma, t. Page 79 in the book
+	float a = vert_a.x - vert_b.x;
+	float b = vert_a.y - vert_b.y;
+	float c = vert_a.z - vert_b.z;
+	float d = vert_a.x - vert_c.x;
+	float e = vert_a.y - vert_c.y;
+	float f = vert_a.z - vert_c.z;
+	float g = ray.dir.x;
+	float h = ray.dir.y;
+	float i = ray.dir.z;
+	float j = vert_a.x - ray.pos.x;
+	float k = vert_a.y - ray.pos.y;
+	float l = vert_a.z - ray.pos.z;
+	float ei_hf = ((e*i)-(h*f));
+	float gf_di = ((g*f)-(d*i));
+	float dh_eg = ((d*h)-(e*g));
+	float ak_jb = ((a*k)-(j*b));
+	float jc_al = ((j*c)-(a*l));
+	float bl_kc = ((b*l)-(k*c));
+	float M = (a*ei_hf) + (b*gf_di) + (c*dh_eg);
+
+	float t = -( ((f*ak_jb)+(e*jc_al)+(d*bl_kc)) / M);
+	if (t<ray.t_min || t>ray.t_max) 
+		return false;
+
+	float gamma = ( (i*ak_jb)+(h*jc_al)+(g*bl_kc) ) / M;
+	if (gamma<0.0 || gamma>1.0) 
+		return false;
+
+	float beta = ( (j*ei_hf)+(k*gf_di)+(l*dh_eg) ) / M;
+	if (beta<0.0 || beta>(1.0-gamma) ) 
+		return false;
+
+	return true;
+}
+
+void Triangle::printSelf() {
+	cout << "Triangle, motherfucker! My vertices (in index form) are: " << this->vert_a_index <<" "<<this->vert_b_index<<" "<<this->vert_c_index<<endl;
 }
 
 // Intersection
@@ -816,7 +917,7 @@ Material::Material(BRDF brdf) {
 }
 
 Material::Material() {
-
+	this->constantBRDF = BRDF();
 }
 
 void Material::getBRDF(LocalGeo& local, BRDF* brdf) {

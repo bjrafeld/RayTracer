@@ -137,8 +137,8 @@ Camera::Camera(Point cameraPos, Point lookAt, Vector3 up, float fov, int screenW
 	this->lookAt = lookAt;
 	float result = 2 * (tan((fov/2)*PI/180));
 	this->aspectRatio = (float)screenWidth/screenHeight;
-	this->imageHeight = result/aspectRatio;
-	this->imageWidth = imageHeight * aspectRatio;
+	this->imageWidth = result*aspectRatio;
+	this->imageHeight = imageWidth / aspectRatio;
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
