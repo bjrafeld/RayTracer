@@ -1,0 +1,18 @@
+output simplescale.png
+
+size 1000 1000
+
+camera 0 0 0 0 0 -1 0 1 0 36.86
+
+directional .57735027 -.57735027 -.57735027 1 1 1
+directional -.57735027 .57735027 .57735027 1 1 1 
+
+ambient .1 .1 .1
+diffuse 1 0 0
+specular 1 1 1
+kr .9
+shininess 50
+
+popTransform
+scale 4 2 2
+sphere 0 0 -17 1

@@ -106,9 +106,9 @@ Point::Point(float x, float y, float z) {
 
 Point Point::operator+(Point p) {
 	Point result;
-	result.x = x + p.x;
-	result.y = y + p.y;
-	result.z = z + p.z;
+	result.x = (x + p.x);
+	result.y = (y + p.y);
+	result.z = (z + p.z);
 	return result;
 }
 
@@ -645,9 +645,15 @@ vector<float> Matrix::multVector(Matrix m, vector<float> vect) {
 		resultHolder[i] = (a+b+c+d);
 	}
 	vector<float> result(3, 0.0);
-	result[0] = resultHolder[0]/resultHolder[3];
-	result[1] = resultHolder[1]/resultHolder[3];
-	result[2] = resultHolder[2]/resultHolder[3];
+	if(resultHolder[3] != 0) {
+		result[0] = resultHolder[0]/resultHolder[3];
+		result[1] = resultHolder[1]/resultHolder[3];
+		result[2] = resultHolder[2]/resultHolder[3];
+	} else {
+		result[0] = resultHolder[0];
+		result[1] = resultHolder[1];
+		result[2] = resultHolder[2];
+	}
 	return result;
 }
 
@@ -662,18 +668,19 @@ Point Transformation::operator*(Point p) {
 }
 
 Vector3 Transformation::operator*(Vector3 v) {
-	vector<float> mult(4, 1.0);
+	vector<float> mult(4, 0.0);
 	mult[0] = v.x;
 	mult[1] = v.y;
 	mult[2] = v.z;
 	vector<float> result = Matrix::multVector(mat, mult);
+
 	Vector3 vect(result[0], result[1], result[2]);
 	return vect;
 }
 
 Normal Transformation::operator*(Normal n) {
 	//TODO
-	vector<float> mult(4, 1.0);
+	vector<float> mult(4, 0.0);
 	mult[0] = n.x;
 	mult[1] = n.y;
 	mult[2] = n.z;
