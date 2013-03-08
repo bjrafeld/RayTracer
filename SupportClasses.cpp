@@ -220,8 +220,8 @@ Ray::Ray(Point p, Vector3 v, float t_min, float t_max) {
 Ray Ray::createReflectRay(LocalGeo local, Ray ray) {
 	Vector3 n = local.normal.normalToVector();
 	float dotProduct = Vector3::dotProduct(ray.dir.normalize(), n);
-	Vector3 direction = n * (2.0 * dotProduct) - ray.dir.normalize();
-	Ray result(local.pos, direction.normalize(), 0.01, 9999.0);
+	Vector3 direction = ray.dir.normalize() - (n * (2.0 * dotProduct));
+	Ray result(local.pos, direction.normalize(), 0.01, 999999.99);
 	return result;
 }
 

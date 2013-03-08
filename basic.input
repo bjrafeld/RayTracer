@@ -1,7 +1,7 @@
 size 1000 1000
 output shadows.png
 
-maxdepth 1
+maxdepth 5
 
 #background 0.15 0 0.3
 
