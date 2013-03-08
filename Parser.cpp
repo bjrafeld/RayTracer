@@ -209,18 +209,24 @@ void loadScene(string file, Scene* scene) {
       //rotate x y z angle
       //  Rotate by angle (in degrees) about the given axis as in OpenGL.
       else if(!splitline[0].compare("rotate")) {
-        // x: atof(splitline[1].c_str())
-        // y: atof(splitline[2].c_str())
-        // z: atof(splitline[3].c_str())
-        // angle: atof(splitline[4].c_str())
+        float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
+        float angle = atof(splitline[4].c_str());
+
+        Matrix transform = Matrix::createRotationMatrix(x, y, z, angle);
+        currentTransform.pushTransform(transform);
         // Update top of matrix stack
       }
       //scale x y z
       //  Scale by the corresponding amount in each axis (a non-uniform scaling).
       else if(!splitline[0].compare("scale")) {
-        // x: atof(splitline[1].c_str())
-        // y: atof(splitline[2].c_str())
-        // z: atof(splitline[3].c_str())
+        float x = atof(splitline[1].c_str());
+        float y = atof(splitline[2].c_str());
+        float z = atof(splitline[3].c_str());
+
+        Matrix transform = Matrix::createScalarMatrix(x, y, z);
+        currentTransform.pushTransform(transform);
         // Update top of matrix stack
       }
       //pushTransform

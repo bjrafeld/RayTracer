@@ -1,6 +1,8 @@
 #include "SupportClasses.h"
 #include <algorithm>
+#include <cmath>
 
+#define PI 3.14159265
 
 inline float sqr(float x) {return x * x;}
 
@@ -219,7 +221,7 @@ Ray Ray::createReflectRay(LocalGeo local, Ray ray) {
 	Vector3 n = local.normal.normalToVector();
 	float dotProduct = Vector3::dotProduct(ray.dir.normalize(), n);
 	Vector3 direction = n * (2.0 * dotProduct) - ray.dir.normalize();
-	Ray result(local.pos, direction.normalize(), 0.01, 999999.99);
+	Ray result(local.pos, direction.normalize(), 0.01, 9999.0);
 	return result;
 }
 
@@ -364,6 +366,59 @@ Matrix Matrix::createScalarMatrix(float sx, float sy, float sz) {
 	input[2][2] = sz;
 	input[3][3] = 1.0;
 	return Matrix(input);
+}
+
+Matrix Matrix::createXRotation(float angle) {
+	float s = sin(angle * (PI/180));
+	float c = cos(angle * (PI/180));
+	vector <vector <float> > input(4, vector<float>(4, 0.0));
+	input[0][0] = 1.0;
+	input[1][1] = c;
+	input[2][1] = -s;
+	input[1][2] = s;
+	input[2][2] = c;
+	input[3][3] = 1.0;
+	return Matrix(input);
+}
+
+Matrix Matrix::createYRotation(float angle) {
+	float s = sin(angle * (PI/180));
+	float c = cos(angle * (PI/180));
+	vector <vector <float> > input(4, vector<float>(4, 0.0));
+	input[0][0] = c;
+	input[2][0] = s;
+	input[1][1] = 1.0;
+	input[0][3] = -s;
+	input[2][2] = c;
+	input[3][3] = 1.0;
+	return Matrix(input);
+}
+
+Matrix Matrix::createZRotation(float angle) {
+	float s = sin(angle * (PI/180));
+	float c = cos(angle * (PI/180));
+	vector <vector <float> > input(4, vector<float>(4, 0.0));
+	input[0][0] = c;
+	input[1][0] = -s;
+	input[0][1] = s;
+	input[1][1] = c;
+	input[2][2] = 1.0;
+	input[3][3] = 1.0;
+	return Matrix(input);
+}
+
+Matrix Matrix::createRotationMatrix(float x, float y, float z, float angle) {
+	Matrix xRot, yRot, zRot;
+	if (x > 0.0f) {
+		xRot = Matrix::createXRotation(angle);
+	}
+	if (y > 0.0f) {
+		yRot = Matrix::createYRotation(angle);
+	}
+	if (z > 0.0f) {
+		zRot = Matrix::createZRotation(angle);
+	}
+	return Matrix::matMult(Matrix::matMult(xRot, yRot), zRot);
 }
 
 Matrix Matrix::adjointMatrix(vector <vector <float> > input) {

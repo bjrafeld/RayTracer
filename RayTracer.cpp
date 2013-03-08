@@ -52,6 +52,7 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		}
 		
 	}
+
 	totalColor = totalColor + brdf.ka;
 
 	if(brdf.kr > 0.0) {
@@ -61,6 +62,7 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		this->trace(reflectRay, (depth+1), &tempColor);
 		totalColor = totalColor + ((brdf.ks * tempColor)*brdf.kr);
 	}
+
 
 	totalColor.r = min(totalColor.r, 1.0f);
 	totalColor.g = min(totalColor.g, 1.0f);

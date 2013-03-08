@@ -1,0 +1,48 @@
+size 1000 1000
+output shadows.png
+
+maxdepth 1
+
+#background 0.15 0 0.3
+
+camera 0 0 0 0 0 -1 0 1 0 36.86
+
+directional .57735027 -.57735027 -.57735027 1 1 1
+directional -.57735027 .57735027 .57735027 1 1 1 
+
+popTransform
+ambient .1 .1 .1
+diffuse 0 0 1
+specular 1 1 1
+kr .9
+shininess 50
+scale 0.5 1.5 1.0
+#rotate 0 1 0 -45
+#rotate 0 0 1 45
+sphere -2 -4 -17 1.5
+
+popTransform
+diffuse 0 1 0
+scale 0.5 1.5 1.0
+#rotate 0 1 1 -45
+sphere -2 4 -17 1.5
+
+popTransform
+diffuse 1 0 0
+scale 4.0 2.0 2.0
+sphere 0 0 -17 2
+
+popTransform
+diffuse 1 1 0
+scale 0.5 1.5 1
+#rotate 0 1 0 45
+#rotate 0 0 1 -135
+sphere 2 4 -17 1.5
+
+popTransform
+diffuse 0 1 1
+scale 0.5 1.5 1.0
+#rotate 0 1 0 45
+#rotate 0 0 1 135
+sphere 2 -4 -17 1.5
+

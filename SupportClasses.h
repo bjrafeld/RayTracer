@@ -131,6 +131,7 @@ public:
 	Matrix operator*(float n);
 	static Matrix createTranslationMatrix(float tx, float ty, float tz);
 	static Matrix createScalarMatrix(float sx, float sy, float sz);
+	static Matrix createRotationMatrix(float x, float y, float z, float angle);
 	static vector<float> multVector(Matrix transform, vector<float> vect);
 	float determinant(); //Only for 4x4 Matrices
 	Matrix transpose();  //4x4
@@ -140,7 +141,10 @@ public:
     static float twoDeterminant(vector < vector <float> > input);
     
 
-private:    
+private:  
+	static Matrix createXRotation(float angle);
+	static Matrix createYRotation(float angle);
+	static Matrix createZRotation(float angle);  
     static float threeDeterminant(vector < vector <float> > input);
     static Matrix adjointMatrix(vector <vector <float> > input);
     static Matrix computeInverseMatrix(vector < vector <float> > input);
