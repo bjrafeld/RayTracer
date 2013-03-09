@@ -20,34 +20,35 @@ scale 0.5 1.5 1.0
 rotate 0 1 0 -45
 rotate 0 0 1 45
 translate -2 -4 -17
-sphere 0 0 0 1.5
+sphere 0 0 0 1
 
 popTransform
 diffuse 0 1 0
 scale 0.5 1.5 1.0
-rotate 0 1 1 -45
+rotate 0 1 0 -45
+rotate 0 0 1 -45
 translate -2 4 -17
-sphere 0 0 0 1.5
+sphere 0 0 0 1
 
 popTransform
 diffuse 1 0 0
 scale 4.0 2.0 2.0
 translate 0 0 -17
-sphere 0 0 0 2
+sphere 0 0 0 1
 
 popTransform
 diffuse 1 1 0
 scale 0.5 1.5 1
-rotate 0 1 0 45
 rotate 0 0 1 -135
+rotate 0 1 0 45
 translate 2 4 -17
-sphere 0 0 0 1.5
+sphere 0 0 0 1
 
 popTransform
 diffuse 0 1 1
 scale 0.5 1.5 1.0
-rotate 0 1 0 45
 rotate 0 0 1 135
+rotate 0 1 0 45
 translate 2 -4 -17
-sphere 0 0 0 1.5
+sphere 0 0 0 1
 

@@ -251,7 +251,9 @@ public:
 	AggregatePrimitive();
 	AggregatePrimitive(vector<GeometricPrimitive*> list);
 	bool intersect(Ray & ray, float *thit, Intersection* in);
+	bool intersect(Ray & ray, float *thit, Intersection* in, int* index);
 	bool intersectP(Ray & r);
+	bool intersectP(Ray & r, int* index);
 };
 
 // Material

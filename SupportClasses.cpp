@@ -388,7 +388,7 @@ Matrix Matrix::createYRotation(float angle) {
 	input[0][0] = c;
 	input[2][0] = s;
 	input[1][1] = 1.0;
-	input[0][3] = -s;
+	input[0][2] = -s;
 	input[2][2] = c;
 	input[3][3] = 1.0;
 	return Matrix(input);
@@ -680,11 +680,11 @@ Vector3 Transformation::operator*(Vector3 v) {
 
 Normal Transformation::operator*(Normal n) {
 	//TODO
-	vector<float> mult(4, 0.0);
+	vector<float> mult(4, 1.0);
 	mult[0] = n.x;
 	mult[1] = n.y;
 	mult[2] = n.z;
-	vector<float> result = Matrix::multVector(minvt.transpose(), mult);
+	vector<float> result = Matrix::multVector(this->minvt.transpose(), mult);
 	Normal normal(result[0], result[1], result[2]);
 	return normal;
 }
@@ -702,7 +702,7 @@ LocalGeo Transformation::operator*(LocalGeo l) {
 }
 
 void Transformation::pushTransform(Matrix m){
-	this->mat = Matrix::matMult(m, mat);
+	this->mat = Matrix::matMult(mat, m);
 	this->minvt = this->mat.inverse();
 }
 
@@ -935,7 +935,11 @@ bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 }
 
 bool GeometricPrimitive::intersectP(Ray & ray) {
+	//cout<<"Before:" <<ray.pos.x<<" "<<ray.pos.y<<" "<<ray.pos.z<<endl;
 	Ray objRay = (this->worldToObj * ray);
+	objRay.dir = objRay.dir.normalize();
+
+	//cout<<"After: "<<objRay.pos.x<<" "<<objRay.dir.y<<" "<<objRay.pos.z<<endl;
 	return this->shape->intersectP(objRay);
 }
 
@@ -972,6 +976,27 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 	return hitSomething;
 }
 
+bool AggregatePrimitive::intersect(Ray & ray, float* thit, Intersection* in, int* index) {
+	float *new_Hit = new float(99999.0);
+	bool hitSomething = false;
+	Intersection *closestIntersection = new Intersection();
+	for(unsigned int i=0; i<allPrimitives.size(); i++) {
+		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
+			//cout<<"Hit Something"<<endl;
+			hitSomething = true;
+			if((*new_Hit) < (*thit)) {
+				(*index) = i;
+				(*thit) = (*new_Hit);
+				(*in) = (*closestIntersection);
+			}
+		}
+	}
+	//Assumes that intersectP has been called -- no false returned
+	delete closestIntersection;
+	delete new_Hit;
+	return hitSomething;
+}
+
 //Should be called before intersect to check
 bool AggregatePrimitive::intersectP(Ray & ray) {
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
@@ -979,6 +1004,17 @@ bool AggregatePrimitive::intersectP(Ray & ray) {
 			return true;
 		}
 	}
+	return false;
+}
+
+bool AggregatePrimitive::intersectP(Ray & ray, int* index) {
+	for(unsigned int i=0; i<allPrimitives.size(); i++) {
+		if (allPrimitives[i]->intersectP(ray)) {
+			(*index) = i;
+			return true;
+		}
+	}
+	(*index) = -1;
 	return false;
 }
 

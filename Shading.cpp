@@ -30,6 +30,9 @@ Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const
 	outputColor.r = min(outputColor.r, 1.0f);
 	outputColor.g = min(outputColor.g, 1.0f);
 	outputColor.b = min(outputColor.b, 1.0f);
+	if((specular.r!=0 ||specular.g!=0||specular.b!=0) && dotProduct==0) {
+		//cout<<"AHA!"<<endl;
+	}
 	return outputColor;
 }	
 

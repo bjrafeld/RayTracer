@@ -31,7 +31,8 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		color->setColor(0.0, 0.0, 0.0);
 		return;
 	}
-	if(!scene->aggPrimitives.intersect(ray, &thit, &in)) {
+	int intersectedPrimitiveIndex;
+	if(!scene->aggPrimitives.intersect(ray, &thit, &in, &intersectedPrimitiveIndex)) {
 		color->setColor(scene->background_r, scene->background_g, scene->background_b);
 		//cout<<"Not intersecting anything\n"<<endl;
 		return;
@@ -48,6 +49,7 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
 		if(!(scene->aggPrimitives.intersectP(lray))) {
+			//lray = scene->aggPrimitives.allPrimitives[intersectedPrimitiveIndex]->worldToObj * lray;
 			totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
 		}
 		
@@ -120,11 +122,12 @@ void PointLight::printSelf() {
 
 void PointLight::generateLightRay(LocalGeo& local, Ray* lray, Color* color) {
 	lray->pos = local.pos;
-	lray->dir = Vector3::pointSubtraction(this->location, local.pos).normalize();
+	lray->dir = Vector3::pointSubtraction(this->location, local.pos);
 	color->r = this->color.r;
 	color->g = this->color.g;
 	color->b = this->color.b;
 	lray->t_max = lray->t_min + lray->dir.magnitude();
+	lray->dir = lray->dir.normalize();
 }
 
 DirectionalLight::DirectionalLight() {
