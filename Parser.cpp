@@ -225,8 +225,8 @@ void loadScene(string file, Scene* scene) {
         float y = atof(splitline[2].c_str());
         float z = atof(splitline[3].c_str());
 
-        Matrix transform = Matrix::createScalarMatrix(x, y, z);
-        currentTransform.pushTransform(transform);
+        Matrix transformation = Matrix::createScalarMatrix(x, y, z);
+        currentTransform.pushTransform(transformation);
         // Update top of matrix stack
       }
       //pushTransform

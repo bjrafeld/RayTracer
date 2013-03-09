@@ -926,7 +926,7 @@ void GeometricPrimitive::printSelf() {
 
 bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 	Ray objRay = (this->worldToObj * ray);
-	objRay.dir = objRay.dir.normalize();
+	//objRay.dir = objRay.dir.normalize();
 	LocalGeo objLocal;
 	if (!this->shape->intersect(objRay, thit, &objLocal)) return false;
 	in->primitive = this;
@@ -962,7 +962,6 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
 		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
-			//cout<<"Hit Something"<<endl;
 			hitSomething = true;
 			if((*new_Hit) < (*thit)) {
 				(*thit) = (*new_Hit);
@@ -979,10 +978,14 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 bool AggregatePrimitive::intersect(Ray & ray, float* thit, Intersection* in, int* index) {
 	float *new_Hit = new float(99999.0);
 	bool hitSomething = false;
+	bool hitTwoThings = false;
 	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
 		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
-			//cout<<"Hit Something"<<endl;
+			//cout << "Hit an object at t = " << (*new_Hit) << endl;
+			if (hitSomething) {
+				hitTwoThings = true;
+			}
 			hitSomething = true;
 			if((*new_Hit) < (*thit)) {
 				(*index) = i;
@@ -990,6 +993,9 @@ bool AggregatePrimitive::intersect(Ray & ray, float* thit, Intersection* in, int
 				(*in) = (*closestIntersection);
 			}
 		}
+	}
+	if (hitTwoThings) {
+		//cout << "FINAL T VALUE" << (*thit) << endl;	
 	}
 	//Assumes that intersectP has been called -- no false returned
 	delete closestIntersection;
