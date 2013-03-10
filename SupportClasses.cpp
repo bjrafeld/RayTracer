@@ -146,8 +146,8 @@ Normal::Normal(float x, float y, float z) {
 	this->x = x;
 	this->y = y;
 	this->z = z;
-	if (x!=0 && y!=0 && z!=0) {
-		float magnitude = sqrt(sqr(this->x)+sqr(this->y)+sqr(this->z));
+	float magnitude = sqrt(sqr(this->x)+sqr(this->y)+sqr(this->z));
+	if (magnitude != 0) {
 		this->x = this->x/magnitude;
 		this->y = this->y/magnitude;
 		this->z = this->z/magnitude;
@@ -808,7 +808,7 @@ Triangle::Triangle(int vertexA, int vertexB, int vertexC, vector<Point*>* allVer
 
 	Vector3 edge_a = Vector3::pointSubtraction(vert_b, vert_a);
 	Vector3 edge_b = Vector3::pointSubtraction(vert_c, vert_a);
-	Vector3 tri_normal = Vector3::crossProduct(edge_a, edge_b).normalize();
+	Vector3 tri_normal = Vector3::crossProduct(edge_b, edge_a).normalize();
 	normal.x = tri_normal.x;
 	normal.y = tri_normal.y;
 	normal.z = tri_normal.z;
