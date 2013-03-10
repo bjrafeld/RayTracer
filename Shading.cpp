@@ -16,6 +16,9 @@ Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const
 	if(dotProduct < 0) {
 		dotProduct *= -1.0;
 	}
+	if(brdf.kd.r > .69 && brdf.kd.g > .69 && brdf.kd.b ==1) {
+		//cout<<dotProduct<<endl;
+	}
 	diffuse = (brdf.kd * dotProduct) * (*lcolor);
 	outputColor = outputColor + diffuse;
 	//specular

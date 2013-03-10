@@ -146,8 +146,8 @@ Normal::Normal(float x, float y, float z) {
 	this->x = x;
 	this->y = y;
 	this->z = z;
-	if (x!=0 && y!=0 && z!=0) {
-		float magnitude = sqrt(sqr(this->x)+sqr(this->y)+sqr(this->z));
+	float magnitude = sqrt(sqr(this->x)+sqr(this->y)+sqr(this->z));
+	if (magnitude!=0) {
 		this->x = this->x/magnitude;
 		this->y = this->y/magnitude;
 		this->z = this->z/magnitude;
@@ -812,6 +812,7 @@ Triangle::Triangle(int vertexA, int vertexB, int vertexC, vector<Point*>* allVer
 	normal.x = tri_normal.x;
 	normal.y = tri_normal.y;
 	normal.z = tri_normal.z;
+	cout<<tri_normal.x<<" "<<tri_normal.y<<" "<<tri_normal.z<<endl;
 }
 
 bool Triangle::intersect(Ray & ray, float* thit, LocalGeo* local) {
@@ -962,6 +963,7 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
 		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
+			//cout<<"Hit Something"<<endl;
 			hitSomething = true;
 			if((*new_Hit) < (*thit)) {
 				(*thit) = (*new_Hit);
@@ -978,14 +980,10 @@ bool AggregatePrimitive::intersect(Ray & ray, float *thit, Intersection* in) {
 bool AggregatePrimitive::intersect(Ray & ray, float* thit, Intersection* in, int* index) {
 	float *new_Hit = new float(99999.0);
 	bool hitSomething = false;
-	bool hitTwoThings = false;
 	Intersection *closestIntersection = new Intersection();
 	for(unsigned int i=0; i<allPrimitives.size(); i++) {
 		if(allPrimitives[i]->intersect(ray, new_Hit, closestIntersection)) {
-			//cout << "Hit an object at t = " << (*new_Hit) << endl;
-			if (hitSomething) {
-				hitTwoThings = true;
-			}
+			//cout<<"Hit Something"<<endl;
 			hitSomething = true;
 			if((*new_Hit) < (*thit)) {
 				(*index) = i;
@@ -993,9 +991,6 @@ bool AggregatePrimitive::intersect(Ray & ray, float* thit, Intersection* in, int
 				(*in) = (*closestIntersection);
 			}
 		}
-	}
-	if (hitTwoThings) {
-		//cout << "FINAL T VALUE" << (*thit) << endl;	
 	}
 	//Assumes that intersectP has been called -- no false returned
 	delete closestIntersection;
