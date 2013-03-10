@@ -12,7 +12,10 @@ Color Shader::shading(LocalGeo local, BRDF brdf, Ray* lray, Color* lcolor, const
 	Color outputColor;
 	// diffuse
 	Color diffuse;
-	float dotProduct = max(Vector3::dotProduct(lray->dir.normalize(), local.normal.normalToVector()), 0.0f);
+	float dotProduct = Vector3::dotProduct(lray->dir.normalize(), local.normal.normalToVector());
+	if(dotProduct < 0) {
+		dotProduct *= -1.0;
+	}
 	diffuse = (brdf.kd * dotProduct) * (*lcolor);
 	outputColor = outputColor + diffuse;
 	//specular

@@ -16,39 +16,39 @@ diffuse 0 0 1
 specular 1 1 1
 kr .9
 shininess 50
-scale 0.5 1.5 1.0
+translate -2 -4 -17
 rotate 0 1 0 -45
 rotate 0 0 1 45
-translate -2 -4 -17
+scale 0.5 1.5 1.0
 sphere 0 0 0 1
 
 popTransform
 diffuse 0 1 0
-scale 0.5 1.5 1.0
+translate -2 4 -17
 rotate 0 1 0 -45
 rotate 0 0 1 -45
-translate -2 4 -17
+scale 0.5 1.5 1.0
 sphere 0 0 0 1
 
 popTransform
 diffuse 1 0 0
-scale 4.0 2.0 2.0
 translate 0 0 -17
+scale 4.0 2.0 2.0
 sphere 0 0 0 1
 
 popTransform
 diffuse 1 1 0
-scale 0.5 1.5 1
-rotate 0 0 1 -135
-rotate 0 1 0 45
 translate 2 4 -17
+rotate 0 1 0 45
+rotate 0 0 1 -135
+scale 0.5 1.5 1
 sphere 0 0 0 1
 
 popTransform
 diffuse 0 1 1
-scale 0.5 1.5 1.0
-rotate 0 0 1 135
-rotate 0 1 0 45
 translate 2 -4 -17
+rotate 0 1 0 45
+rotate 0 0 1 135
+scale 0.5 1.5 1.0
 sphere 0 0 0 1
 

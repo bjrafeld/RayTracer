@@ -219,9 +219,9 @@ Ray::Ray(Point p, Vector3 v, float t_min, float t_max) {
 
 Ray Ray::createReflectRay(LocalGeo local, Ray ray) {
 	Vector3 n = local.normal.normalToVector();
-	float dotProduct = Vector3::dotProduct(ray.dir.normalize(), n);
-	Vector3 direction = ray.dir.normalize() - (n * (2.0 * dotProduct));
-	Ray result(local.pos, direction.normalize(), 0.01, 999999.99);
+	float dotProduct = Vector3::dotProduct(ray.dir, n);
+	Vector3 direction = ray.dir - (n * (2.0 * dotProduct));
+	Ray result(local.pos, direction, 0.01, 999999.99);
 	return result;
 }
 
@@ -926,7 +926,7 @@ void GeometricPrimitive::printSelf() {
 
 bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 	Ray objRay = (this->worldToObj * ray);
-	objRay.dir = objRay.dir.normalize();
+	//objRay.dir = objRay.dir.normalize();
 	LocalGeo objLocal;
 	if (!this->shape->intersect(objRay, thit, &objLocal)) return false;
 	in->primitive = this;
@@ -937,7 +937,7 @@ bool GeometricPrimitive::intersect(Ray & ray, float* thit, Intersection* in) {
 bool GeometricPrimitive::intersectP(Ray & ray) {
 	//cout<<"Before:" <<ray.pos.x<<" "<<ray.pos.y<<" "<<ray.pos.z<<endl;
 	Ray objRay = (this->worldToObj * ray);
-	objRay.dir = objRay.dir.normalize();
+	//objRay.dir = objRay.dir.normalize();
 
 	//cout<<"After: "<<objRay.pos.x<<" "<<objRay.dir.y<<" "<<objRay.pos.z<<endl;
 	return this->shape->intersectP(objRay);
