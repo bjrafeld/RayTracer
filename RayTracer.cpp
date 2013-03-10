@@ -48,7 +48,8 @@ void RayTracer::trace(Ray & ray, int depth, Color* color) {
 		lray.t_min = 0.01;	// ordering here is important
 		lray.t_max = 9999999.0;	// t_max will be set differently for point lights
 		scene->allSceneLights[i]->generateLightRay(in.localGeo, &lray, &lcolor);
-		if(!(scene->aggPrimitives.intersectP(lray))) {
+		if(!(scene->aggPrimitives.intersectP(lray))) { // could be due to light ray direction being normalized
+
 			//lray = scene->aggPrimitives.allPrimitives[intersectedPrimitiveIndex]->worldToObj * lray;
 			totalColor = totalColor + shader->shading(in.localGeo, brdf, &lray, &lcolor, scene->camera.pos, ray.dir);
 		}

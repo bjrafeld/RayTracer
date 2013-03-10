@@ -808,7 +808,7 @@ Triangle::Triangle(int vertexA, int vertexB, int vertexC, vector<Point*>* allVer
 
 	Vector3 edge_a = Vector3::pointSubtraction(vert_b, vert_a);
 	Vector3 edge_b = Vector3::pointSubtraction(vert_c, vert_a);
-	Vector3 tri_normal = Vector3::crossProduct(edge_a, edge_b).normalize();
+	Vector3 tri_normal = Vector3::crossProduct(edge_b, edge_a).normalize();
 	normal.x = tri_normal.x;
 	normal.y = tri_normal.y;
 	normal.z = tri_normal.z;
